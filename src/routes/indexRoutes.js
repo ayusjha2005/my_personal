@@ -6,11 +6,14 @@ const { formatDate } = require('../utils/helpers');
 
 // Home page
 router.get('/', async (req, res, next) => {
+  const t0 = Date.now();
+  console.log('[Route] GET / — start');
   try {
     const [featuredBlogs, projects] = await Promise.all([
-      Blog.find({ status: 'published' }).sort({ featured: -1, publishedAt: -1 }).limit(6).lean(),
-      Project.find({}).sort({ order: 1, createdAt: -1 }).lean(),
+      Blog.find({ status: 'published' }).sort({ featured: -1, publishedAt: -1 }).limit(6).maxTimeMS(5000).lean(),
+      Project.find({}).sort({ order: 1, createdAt: -1 }).maxTimeMS(5000).lean(),
     ]);
+    console.log(`[Route] GET / — DB queries done in ${Date.now() - t0}ms`);
 
     res.render('pages/home', {
       pageTitle: 'Ayush Jha · tech blog',
@@ -20,6 +23,7 @@ router.get('/', async (req, res, next) => {
       formatDate,
     });
   } catch (err) {
+    console.error(`[Route] GET / — error after ${Date.now() - t0}ms:`, err.message);
     next(err);
   }
 });
@@ -44,7 +48,7 @@ router.get('/skills', (req, res) => {
 // Writing Corner
 router.get('/corner', async (req, res, next) => {
   try {
-    const allBlogs = await Blog.find({ status: 'published' }).sort({ publishedAt: -1 }).lean();
+    const allBlogs = await Blog.find({ status: 'published' }).sort({ publishedAt: -1 }).maxTimeMS(5000).lean();
     res.render('pages/corner', {
       pageTitle: 'Writing Corner · Ayush Jha',
       metaDescription: 'A small desk for drafts, half-thoughts, and reading notes by Ayush Jha.',
@@ -73,7 +77,7 @@ router.get('/health', (req, res) => {
 // XML Sitemap
 router.get('/sitemap.xml', async (req, res, next) => {
   try {
-    const blogs = await Blog.find({ status: 'published' }).select('slug updatedAt').lean();
+    const blogs = await Blog.find({ status: 'published' }).select('slug updatedAt').maxTimeMS(5000).lean();
     const baseUrl = `${req.protocol}://${req.get('host')}`;
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;

@@ -74,24 +74,27 @@ function createApp() {
   if (isProduction) {
     // Always use MongoStore in production — clientPromise resolves to the
     // native MongoClient once connectDB() completes in api/index.js.
-    // MongoStore holds the promise internally; no readyState check needed.
+    // IMPORTANT: autoRemove:'interval' avoids the blocking createIndex() call
+    // that 'native' triggers on every cold start (which caused 504 timeouts).
+    console.log('[Session] Creating MongoStore for production...');
     sessionConfig.store = MongoStore.create({
-      clientPromise,          // Promise<MongoClient> — resolved before first request
+      clientPromise,            // Promise<MongoClient> — resolved before first request
       collectionName: 'sessions',
-      ttl: 14 * 24 * 60 * 60, // 14 days in seconds
-      autoRemove: 'native',
+      ttl: 14 * 24 * 60 * 60,  // 14 days in seconds
+      autoRemove: 'interval',   // runs a timer, no createIndex blocking cold start
+      autoRemoveInterval: 10,   // purge expired sessions every 10 minutes
     });
-    console.log('[Session] Store: MongoStore (MongoDB Atlas)');
+    console.log('[Session] Store: MongoStore (MongoDB Atlas) — ready');
   } else {
-    // Development: use the same MongoStore backed by in-memory MongoDB
-    // (clientPromise resolves to the in-memory MongoClient from connectDB).
+    // Development: same MongoStore backed by in-memory MongoDB
     sessionConfig.store = MongoStore.create({
       clientPromise,
       collectionName: 'sessions',
       ttl: 14 * 24 * 60 * 60,
-      autoRemove: 'native',
+      autoRemove: 'interval',
+      autoRemoveInterval: 10,
     });
-    console.log('[Session] Store: MongoStore (local/in-memory MongoDB)');
+    console.log('[Session] Store: MongoStore (local/in-memory MongoDB) — ready');
   }
 
   app.use(session(sessionConfig));
