@@ -1,0 +1,146 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="app" tabindex="-1">
+  <section class="view">
+    <div class="about">
+      <div>
+        <h1>About Me</h1>
+        <p style="color:var(--muted);margin-top:16px;line-height:1.7;">
+          I am <strong>Ayush Jha</strong>, a Computer Science and Engineering student at <strong>VIT</strong> with a strong interest in software development, problem-solving, and emerging technologies.
+        </p>
+        <p style="color:var(--muted);margin-top:12px;line-height:1.7;">
+          I enjoy understanding how software systems work behind the scenes, building practical applications, solving programming problems, and exploring new technologies.
+        </p>
+        <p style="color:var(--muted);margin-top:12px;line-height:1.7;">
+          My technical interests include backend development, full-stack web development, database systems, Data Structures and Algorithms, cloud computing, and artificial intelligence.
+        </p>
+        <p style="color:var(--muted);margin-top:12px;line-height:1.7;">
+          I believe in learning by building. I enjoy developing real-world projects, experimenting with different technologies, and continuously improving my engineering skills.
+        </p>
+        <p style="color:var(--muted);margin-top:12px;line-height:1.7;">
+          Beyond technology, I enjoy cricket, football, photography, science fiction, Marvel, automobiles, and exploring new gadgets.
+        </p>
+        <p style="color:var(--muted);margin-top:12px;line-height:1.7;">
+          My long-term goal is to become a skilled software engineer capable of designing, developing, and scaling meaningful software products.
+        </p>
+      </div>
+
+      <div>
+        <div class="stack">
+          <div><span>Institution</span><span>VIT</span></div>
+          <div><span>Degree</span><span>B.Tech</span></div>
+          <div><span>Discipline</span><span>Computer Science and Engineering (CSE)</span></div>
+          <div><span>Duration</span><span>2025–2029</span></div>
+          <div><span>Primary Focus</span><span>Software Engineering & Backend</span></div>
+          <div><span>Location</span><span>India</span></div>
+        </div>
+
+        <div class="education-card">
+          <div class="inst">Education Background</div>
+          <h3>Bachelor of Technology (B.Tech)</h3>
+          <p class="detail">Computer Science and Engineering (CSE)<br>VIT · 2025–2029</p>
+          <div style="margin-top:12px;font-size:11px;color:var(--muted);line-height:1.6;font-family:var(--mono);">
+            <strong style="color:var(--fg);">Academic Interests:</strong><br>
+            Data Structures and Algorithms · Database Management Systems · Object-Oriented Programming · Software Engineering · Operating Systems · Computer Networks
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Focus Matrix -->
+    <section class="xsec rv in">
+      <div class="xhead"><span class="t">technical focus & areas of study</span></div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <div class="skill-group-title">Core Disciplines</div>
+          <div class="skill-items">
+            <span class="skill-pill">Backend Development</span>
+            <span class="skill-pill">Software Engineering</span>
+            <span class="skill-pill">REST API Development</span>
+            <span class="skill-pill">Full-Stack Development</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-group-title">Foundations</div>
+          <div class="skill-items">
+            <span class="skill-pill">Data Structures & Algorithms</span>
+            <span class="skill-pill">Database Management Systems</span>
+            <span class="skill-pill">Object-Oriented Programming</span>
+            <span class="skill-pill">Operating Systems</span>
+            <span class="skill-pill">Computer Networks</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-group-title">Emerging Horizons</div>
+          <div class="skill-items">
+            <span class="skill-pill exploring">Artificial Intelligence</span>
+            <span class="skill-pill exploring">Cloud Computing</span>
+            <span class="skill-pill exploring">Distributed Systems</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Personal Interests Section (Part 6) -->
+    <section class="xsec rv in">
+      <div class="xhead"><span class="t">personal interests & hobbies</span></div>
+      <div class="skills-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;">
+        <% (profile.interests || ['Cricket', 'Football', 'Photography', 'Science Fiction', 'Marvel', 'Automobiles', 'Technology and Gadgets']).forEach(interest => { %>
+          <div class="skill-card" style="padding: 14px 16px; text-align: center;">
+            <span style="font-size: 13px; color: var(--fg); font-weight: 500;"><%= interest %></span>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+
+    <!-- Socials Grid -->
+    <div class="socials-grid">
+      <a class="scard" href="https://github.com/ayusjha2005" target="_blank" rel="noopener" style="--c:#ffffff;--i:0">
+        <span class="sbadge">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+        </span>
+        <span><span class="sname">GitHub</span><br><span class="shandle">@ayusjha2005</span></span>
+        <span class="sarrow">↗</span>
+      </a>
+
+      <a class="scard" href="https://www.linkedin.com/in/kumar-ayush-322294385/" target="_blank" rel="noopener" style="--c:#0a66c2;--i:1">
+        <span class="sbadge">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20"><rect x="2.5" y="2.5" width="19" height="19" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7.4" cy="7.6" r="1.3" fill="currentColor"/><path d="M6.8 10.2v7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10.6 17.2v-7M10.6 13.2c0-1.8 1.2-2.9 2.8-2.9s2.5 1 2.5 2.9v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span><span class="sname">LinkedIn</span><br><span class="shandle">in/kumar-ayush</span></span>
+        <span class="sarrow">↗</span>
+      </a>
+
+      <a class="scard" href="https://x.com/ayushjha2005" target="_blank" rel="noopener" style="--c:#1d9bf0;--i:2">
+        <span class="sbadge">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.912-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </span>
+        <span><span class="sname">Twitter / X</span><br><span class="shandle">@ayushjha2005</span></span>
+        <span class="sarrow">↗</span>
+      </a>
+
+      <a class="scard" href="mailto:<%= contactEmail %>" style="--c:#e5353b;--i:3" data-copy-email="1">
+        <span class="sbadge">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </span>
+        <span><span class="sname">Email</span><br><span class="shandle"><%= contactEmail %></span></span>
+        <span class="sarrow">↗</span>
+      </a>
+    </div>
+
+    <!-- Newsletter Subscription Form -->
+    <div class="news rv" id="news">
+      <h3>Get new articles by email</h3>
+      <p>One short email when something new is published. No spam, unsubscribe any time.</p>
+      <form id="newsForm" novalidate>
+        <input id="newsEmail" type="email" placeholder="you@example.com" aria-label="Email">
+        <button class="btn primary" type="submit">subscribe</button>
+      </form>
+      <div class="msg" id="newsMsg">&nbsp;</div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

@@ -1,0 +1,103 @@
+<%- include('../partials/nav') %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="admin-title"><%= isEdit ? 'Edit Writing' : 'Create New Technical Writing' %></h1>
+    <div class="admin-subtitle"><%= isEdit ? blog.title : 'Draft and publish technical explanations, architectures, and engineering notes.' %></div>
+  </div>
+  <a href="/admin/writings" class="admin-btn admin-btn-secondary">← Back to Writings</a>
+</div>
+
+<div class="admin-card" style="padding:28px;">
+  <form method="POST" action="<%= isEdit ? '/admin/blogs/edit/' + blog._id : '/admin/blogs/new' %>" enctype="multipart/form-data">
+    <div class="admin-form-group">
+      <label class="admin-form-label" for="title">Article Title *</label>
+      <input class="admin-form-input" type="text" id="title" name="title" value="<%= blog.title %>" required placeholder="e.g. Understanding REST APIs with Node.js and Express">
+    </div>
+
+    <div class="admin-form-row">
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="slug">Custom URL Slug (leave blank to auto-generate)</label>
+        <input class="admin-form-input" type="text" id="slug" name="slug" value="<%= blog.slug %>" placeholder="understanding-rest-apis">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="category">Category *</label>
+        <select class="admin-form-select" id="category" name="category" required>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat %>" <%= blog.category === cat ? 'selected' : '' %>><%= cat %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+
+    <div class="admin-form-row">
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="tags">Tags (comma-separated)</label>
+        <input class="admin-form-input" type="text" id="tags" name="tags" value="<%= Array.isArray(blog.tags) ? blog.tags.join(', ') : blog.tags %>" placeholder="Node.js, Express, REST, Backend">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="coverImage">Cover Image (Optional)</label>
+        <input class="admin-form-input" type="file" id="coverImage" name="coverImage" accept="image/*">
+        <% if (blog.coverImage) { %>
+          <div style="margin-top:6px;font-size:11px;color:var(--admin-muted);">
+            Current: <a href="<%= blog.coverImage %>" target="_blank" style="color:var(--admin-primary)">View Image</a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="admin-form-group">
+      <label class="admin-form-label" for="excerpt">Short Excerpt / Summary *</label>
+      <textarea class="admin-form-input" id="excerpt" name="excerpt" rows="3" required placeholder="A brief explanation of what readers will learn in this post..."><%= blog.excerpt %></textarea>
+    </div>
+
+    <div class="admin-form-group">
+      <label class="admin-form-label" for="content">Markdown / Article Content * (Supports GFM & Code Blocks)</label>
+      <textarea class="admin-form-textarea" id="content" name="content" required placeholder="## 1. Introduction&#10;&#10;Explain the problem space...&#10;&#10;```javascript&#10;const express = require('express');&#10;```"><%= blog.content %></textarea>
+    </div>
+
+    <!-- SEO & Metadata -->
+    <div style="border-top:1px solid var(--admin-border);padding-top:20px;margin-top:24px;">
+      <h3 style="font-size:15px;margin-bottom:14px;color:#fff;">Search Engine Optimization (SEO)</h3>
+      <div class="admin-form-row">
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="seoTitle">SEO Title Tag</label>
+          <input class="admin-form-input" type="text" id="seoTitle" name="seoTitle" value="<%= blog.seoTitle %>" placeholder="Custom page title for search engines">
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="seoDescription">SEO Meta Description</label>
+          <input class="admin-form-input" type="text" id="seoDescription" name="seoDescription" value="<%= blog.seoDescription %>" placeholder="Summary for Google search snippets">
+        </div>
+      </div>
+    </div>
+
+    <!-- Publishing Controls -->
+    <div style="border-top:1px solid var(--admin-border);padding-top:20px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+      <div style="display:flex;gap:20px;align-items:center;">
+        <label class="admin-checkbox-label">
+          <input type="radio" name="status" value="published" <%= blog.status === 'published' ? 'checked' : '' %>>
+          <span><strong>Publish immediately</strong></span>
+        </label>
+        <label class="admin-checkbox-label">
+          <input type="radio" name="status" value="draft" <%= blog.status !== 'published' ? 'checked' : '' %>>
+          <span>Save as Draft</span>
+        </label>
+        <label class="admin-checkbox-label" style="margin-left:14px;">
+          <input type="checkbox" name="featured" <%= blog.featured ? 'checked' : '' %>>
+          <span>Feature on Home Page ★</span>
+        </label>
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <a href="/admin/blogs" class="admin-btn admin-btn-secondary">Cancel</a>
+        <button type="submit" class="admin-btn admin-btn-primary">
+          <%= isEdit ? 'Save Changes' : 'Create Article' %>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>

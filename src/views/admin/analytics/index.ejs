@@ -1,0 +1,79 @@
+<%- include('../partials/nav') %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="admin-title">Traffic & Reader Analytics</h1>
+    <div class="admin-subtitle">Monitor reader engagement, popular technical topics, and traffic over time.</div>
+  </div>
+  <div class="admin-badge admin-badge-success" style="font-size:13px;padding:6px 14px;">
+    Cumulative Views: <%= totalViews %>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:24px;">
+  <!-- Popular Articles -->
+  <div class="admin-card">
+    <div class="admin-card-head">
+      <div class="admin-card-title">Top 10 Most Read Articles</div>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Article</th>
+          <th>Views</th>
+          <th>Likes</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (popularBlogs && popularBlogs.length > 0) { %>
+          <% popularBlogs.forEach(p => { %>
+            <tr>
+              <td>
+                <a href="/blog/<%= p.slug %>" target="_blank" style="color:#fff;font-weight:600;">
+                  <%= p.title %> ↗
+                </a>
+              </td>
+              <td><strong style="color:var(--admin-success)"><%= p.views %></strong></td>
+              <td><%= p.likes %></td>
+              <td style="font-size:12px;color:var(--admin-muted);"><%= p.category %></td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="4" style="text-align:center;color:var(--admin-muted);">No article views recorded yet.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Recent Daily Analytics -->
+  <div class="admin-card">
+    <div class="admin-card-head">
+      <div class="admin-card-title">Recent Page Views Log</div>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Path</th>
+          <th>Views</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (dailyAnalytics && dailyAnalytics.length > 0) { %>
+          <% dailyAnalytics.forEach(row => { %>
+            <tr>
+              <td style="font-family:var(--admin-mono);font-size:12px;"><%= row.date %></td>
+              <td style="font-family:var(--admin-mono);font-size:12px;color:var(--admin-muted);"><%= row.path %></td>
+              <td><strong><%= row.views %></strong></td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="3" style="text-align:center;color:var(--admin-muted);">No recent logs.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

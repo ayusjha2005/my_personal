@@ -1,0 +1,191 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="app" tabindex="-1">
+  <section class="view">
+    <!-- Night Canvas Scene with Walking Cat & Energy Beam -->
+    <div class="scene" aria-hidden="true"><canvas id="scene"></canvas></div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+      <div>
+        <div class="kicker">hi, i'm <b class="wl">Ayush Jha</b> · computer science student & aspiring software engineer</div>
+        <h1>Exploring Technology. <span class="grad">Building Things.</span> Sharing What I Learn.</h1>
+        <p>I'm a computer science student passionate about software development, backend engineering, and exploring the world of technology. This is where I document my journey.</p>
+        <div class="cta">
+          <a class="btn primary" href="/writings">Explore My Writings →</a>
+          <a class="btn" href="/contact">Get in Touch</a>
+        </div>
+      </div>
+      <div class="term" aria-hidden="true">
+        <div class="term-head"><i></i><i></i><i></i><span>~/ayush</span></div>
+        <div class="term-body" id="termBody"></div>
+        <svg class="term-cat" viewBox="0 0 64 48">
+          <g class="walk">
+            <path class="tail" d="M52 42 C62 42 62 30 56 28" stroke="#e8e8e8" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="30" cy="38" rx="18" ry="9" fill="#e8e8e8"/>
+            <circle cx="16" cy="28" r="8" fill="#e8e8e8"/>
+            <path d="M9 22 L8 12 L17 20 Z" fill="#e8e8e8"/><path d="M23 22 L25 12 L16 20 Z" fill="#e8e8e8"/>
+            <path d="M9.4 21 L9.2 16 L13 19 Z" fill="#e5353b"/>
+            <g class="eyes"><circle cx="13" cy="28" r="1.6" fill="#000"/><circle cx="19" cy="28" r="1.6" fill="#000"/></g>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Running Marquee Ticker -->
+    <div class="ticker" aria-hidden="true">
+      <div class="tk">
+        <span>backend engineering</span><span>distributed systems</span><span>data structures & algorithms</span><span>database management</span><span>linux & open source</span><span>artificial intelligence</span><span>system design</span><span>full-stack development</span>
+        <span>backend engineering</span><span>distributed systems</span><span>data structures & algorithms</span><span>database management</span><span>linux & open source</span><span>artificial intelligence</span><span>system design</span><span>full-stack development</span>
+      </div>
+    </div>
+
+    <!-- Featured Writings Section (Dynamic from MongoDB) -->
+    <section class="xsec rv in">
+      <div class="xhead">
+        <span class="t">featured technical writings</span>
+        <a href="/writings">view all writings (<%= featuredBlogs.length %>+) →</a>
+      </div>
+
+      <div class="posts" id="posts">
+        <% if (featuredBlogs && featuredBlogs.length > 0) { %>
+          <% featuredBlogs.forEach((blog, index) => { %>
+            <a class="post" style="--i:<%= index %>" href="/writings/<%= blog.slug %>" data-mx>
+              <div class="meta">
+                <span><%= formatDate(blog.publishedAt || blog.createdAt) %></span>
+                <span>·</span>
+                <span><%= blog.readTime || 3 %> min read</span>
+                <span>·</span>
+                <span style="color:var(--red)"><%= blog.category %></span>
+              </div>
+              <h3><%= blog.title %></h3>
+              <p><%= blog.excerpt %></p>
+              <span class="arrow">↗</span>
+            </a>
+          <% }) %>
+        <% } else { %>
+          <div class="empty">No published articles yet. Check back soon!</div>
+        <% } %>
+      </div>
+    </section>
+
+    <!-- Technical Skills Preview -->
+    <section class="xsec rv">
+      <div class="xhead">
+        <span class="t">technical stack & competencies</span>
+        <a href="/skills">full technical matrix →</a>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <div class="skill-group-title">Programming Languages</div>
+          <div class="skill-items">
+            <span class="skill-pill">C</span>
+            <span class="skill-pill">C++</span>
+            <span class="skill-pill">JavaScript</span>
+            <span class="skill-pill">Python</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-group-title">Backend & APIs</div>
+          <div class="skill-items">
+            <span class="skill-pill">Node.js</span>
+            <span class="skill-pill">Express.js</span>
+            <span class="skill-pill">REST APIs</span>
+            <span class="skill-pill">System Design</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-group-title">Database Management</div>
+          <div class="skill-items">
+            <span class="skill-pill">MongoDB</span>
+            <span class="skill-pill">PostgreSQL</span>
+            <span class="skill-pill">Supabase</span>
+            <span class="skill-pill">SQL / PL/SQL</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-group-title">Areas of Exploration</div>
+          <div class="skill-items">
+            <span class="skill-pill exploring">Data Structures & Algorithms</span>
+            <span class="skill-pill exploring">Artificial Intelligence</span>
+            <span class="skill-pill exploring">Cloud Computing</span>
+            <span class="skill-pill exploring">Backend Architecture</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GitHub Contribution Simulation Graph -->
+    <section class="xsec rv">
+      <div class="xhead">
+        <span class="t">engineering activity</span>
+        <a href="https://github.com/ayusjha2005" target="_blank" rel="noopener">github profile →</a>
+      </div>
+      <div class="graph-wrap"><div class="graph" id="graph"></div></div>
+      <div class="legend">Less <i data-lv="0"></i><i data-lv="1"></i><i data-lv="2"></i><i data-lv="3"></i><i data-lv="4"></i> More</div>
+    </section>
+
+    <!-- Education Timeline -->
+    <section class="xsec rv">
+      <div class="xhead"><span class="t">education & journey</span><a href="/about">about me →</a></div>
+      <div class="exp first">
+        <span>B.Tech in Computer Science and Engineering at VIT</span>
+        <span class="yr">2025–2029</span>
+        <span class="role">Focusing on algorithms, database engineering, backend systems, and emerging technologies</span>
+      </div>
+      <div class="exp">
+        <span>Technology Exploration & Full-Stack Projects</span>
+        <span class="yr">Ongoing</span>
+        <span class="role">Building AI-assisted platforms, hardware road monitors, and personal technical tools</span>
+      </div>
+    </section>
+
+    <!-- Say Hi Mailbox & Contact Preview -->
+    <section class="xsec rv" id="say">
+      <div class="xhead"><span class="t">let's connect</span><a href="/contact">contact page →</a></div>
+      <div class="mailbox">
+        <span id="email2"><%= contactEmail %></span>
+        <button id="copyMail" type="button">copy</button>
+      </div>
+    </section>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>
+<script>
+  // Initialize contribution graph on home page
+  (function initGraph() {
+    const g = document.getElementById('graph');
+    if (!g) return;
+    const months = ['Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+    const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const labels = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
+    g.appendChild(document.createElement('span'));
+    for (let w = 0; w < 52; w++) {
+      const m = document.createElement('span'); m.className = 'm';
+      if (w % 4 === 0) m.textContent = months[Math.floor(w / 4.35) % 12];
+      g.appendChild(m);
+    }
+    const cells = [];
+    for (let d = 0; d < 7; d++) {
+      const lab = document.createElement('span'); lab.className = 'd'; lab.textContent = labels[d]; g.appendChild(lab);
+      for (let w = 0; w < 52; w++) {
+        const c = document.createElement('span'); c.className = 'cell';
+        const r = Math.random();
+        c.dataset.lv = r < 0.35 ? 0 : r < 0.55 ? 1 : r < 0.75 ? 2 : r < 0.9 ? 3 : 4;
+        c.addEventListener('pointerenter', e => {
+          const t = document.getElementById('tip');
+          if (t) {
+            t.textContent = `${DAYS[d]} · week ${w + 1}`;
+            t.style.left = e.clientX + 'px'; t.style.top = e.clientY + 'px'; t.style.opacity = 1;
+          }
+        });
+        c.addEventListener('pointerleave', () => { const t = document.getElementById('tip'); if (t) t.style.opacity = 0; });
+        g.appendChild(c); cells.push({ el: c, w, d });
+      }
+    }
+    cells.forEach(({ el, w, d }) => setTimeout(() => el.classList.add('on'), w * 18 + d * 14));
+  })();
+</script>

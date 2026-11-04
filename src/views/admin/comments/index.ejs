@@ -1,0 +1,104 @@
+<%- include('../partials/nav') %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="admin-title">Comments Moderation</h1>
+    <div class="admin-subtitle">Review, approve, and delete reader comments submitted across your writings.</div>
+  </div>
+</div>
+
+<!-- Filters & Search Toolbar -->
+<div class="admin-card" style="margin-bottom: 20px; padding: 14px 20px;">
+  <form method="GET" action="/admin/comments" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:12px;color:var(--admin-muted);">Filter:</span>
+      <a href="/admin/comments" class="admin-btn <%= activeStatus === 'all' ? 'admin-btn-primary' : 'admin-btn-secondary' %>" style="padding:4px 10px;font-size:11px;">All</a>
+      <a href="/admin/comments?status=approved" class="admin-btn <%= activeStatus === 'approved' ? 'admin-btn-primary' : 'admin-btn-secondary' %>" style="padding:4px 10px;font-size:11px;">Approved</a>
+      <a href="/admin/comments?status=spam" class="admin-btn <%= activeStatus === 'spam' ? 'admin-btn-primary' : 'admin-btn-secondary' %>" style="padding:4px 10px;font-size:11px;">Spam</a>
+    </div>
+
+    <div style="flex:1;min-width:200px;display:flex;gap:8px;margin-left:auto;">
+      <input type="text" name="search" value="<%= searchQuery %>" placeholder="Search author or comment text..." class="admin-input" style="padding:6px 12px;font-size:12px;">
+      <button type="submit" class="admin-btn admin-btn-secondary" style="padding:6px 12px;font-size:12px;">Search</button>
+      <% if (searchQuery || activeStatus !== 'all') { %>
+        <a href="/admin/comments" class="admin-btn admin-btn-secondary" style="padding:6px 12px;font-size:12px;">Reset</a>
+      <% } %>
+    </div>
+  </form>
+</div>
+
+<!-- Comments Table -->
+<div class="admin-card">
+  <% if (comments && comments.length > 0) { %>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Author</th>
+          <th>Comment</th>
+          <th>Writing Article</th>
+          <th>Likes</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% comments.forEach(comment => { %>
+          <tr>
+            <td>
+              <strong><%= comment.author %></strong>
+              <% if (comment.email) { %>
+                <div style="font-size:11px;color:var(--admin-muted);"><%= comment.email %></div>
+              <% } %>
+            </td>
+            <td style="max-width:320px;">
+              <div style="font-size:13px;line-height:1.5;color:var(--admin-fg);word-break:break-word;">
+                <%= comment.content %>
+              </div>
+            </td>
+            <td>
+              <% if (comment.blogId) { %>
+                <a href="/writings/<%= comment.blogId.slug %>" target="_blank" style="color:var(--admin-primary);font-size:12px;font-weight:600;">
+                  <%= comment.blogId.title %> ↗
+                </a>
+              <% } else { %>
+                <span style="color:var(--admin-muted);font-size:12px;">(Deleted Article)</span>
+              <% } %>
+            </td>
+            <td>
+              <span style="font-family:var(--admin-mono);font-size:12px;color:var(--admin-primary);">♥ <%= comment.likes || 0 %></span>
+            </td>
+            <td>
+              <span class="admin-badge <%= comment.status === 'approved' ? 'admin-badge-published' : 'admin-badge-draft' %>">
+                <%= comment.status %>
+              </span>
+            </td>
+            <td style="font-size:12px;color:var(--admin-muted);font-family:var(--admin-mono);">
+              <%= formatDate(comment.createdAt) %>
+            </td>
+            <td style="text-align:right;">
+              <div style="display:inline-flex;gap:6px;">
+                <form action="/admin/comments/toggle/<%= comment._id %>" method="POST" style="display:inline;">
+                  <button type="submit" class="admin-btn admin-btn-secondary" style="padding:3px 8px;font-size:11px;">
+                    <%= comment.status === 'approved' ? 'Mark Spam' : 'Approve' %>
+                  </button>
+                </form>
+                <form action="/admin/comments/delete/<%= comment._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Permanently delete this comment?');">
+                  <button type="submit" class="admin-btn admin-btn-danger" style="padding:3px 8px;font-size:11px;">
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <div style="padding:40px;text-align:center;color:var(--admin-muted);">
+      No reader comments found matching the current filter.
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

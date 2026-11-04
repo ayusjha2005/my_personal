@@ -1,0 +1,163 @@
+<%- include('partials/nav') %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="admin-title">Engineering Dashboard</h1>
+    <div class="admin-subtitle">Welcome back, <%= currentUser ? currentUser.username : 'Ayush' %>. Here is your publication & project overview.</div>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <a href="/admin/writings/new" class="admin-btn admin-btn-primary">+ Create Writing</a>
+    <a href="/admin/settings" class="admin-btn admin-btn-secondary">⚙️ Site Settings</a>
+    <a href="/admin/comments" class="admin-btn admin-btn-secondary">💬 Comments</a>
+    <a href="/admin/projects/new" class="admin-btn admin-btn-secondary">+ New Project</a>
+  </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+  <div class="admin-stat-card">
+    <div class="admin-stat-label">Published Writings</div>
+    <div class="admin-stat-value"><%= stats.publishedBlogsCount %></div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-label">Pending Drafts</div>
+    <div class="admin-stat-value" style="color:var(--admin-warning)"><%= stats.draftsCount %></div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-label">Reader Comments</div>
+    <div class="admin-stat-value" style="color:#7cf0ff"><%= stats.totalCommentsCount || 0 %></div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-label">Active Projects</div>
+    <div class="admin-stat-value"><%= stats.projectsCount %></div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-label">Total Article Views</div>
+    <div class="admin-stat-value" style="color:var(--admin-success)"><%= stats.totalBlogViews %></div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-label">Unread Messages</div>
+    <div class="admin-stat-value" style="color:var(--admin-primary)"><%= stats.unreadContactsCount %></div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+  <!-- Recent Articles -->
+  <div class="admin-card">
+    <div class="admin-card-head">
+      <div class="admin-card-title">Recent Articles & Drafts</div>
+      <a href="/admin/blogs" style="font-size:12px;color:var(--admin-muted);">View All →</a>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Views</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (recentBlogs && recentBlogs.length > 0) { %>
+          <% recentBlogs.forEach(blog => { %>
+            <tr>
+              <td>
+                <strong><%= blog.title %></strong><br>
+                <span style="font-size:11px;color:var(--admin-muted);font-family:var(--admin-mono);"><%= blog.category %></span>
+              </td>
+              <td>
+                <span class="admin-badge <%= blog.status === 'published' ? 'admin-badge-success' : 'admin-badge-warning' %>">
+                  <%= blog.status %>
+                </span>
+              </td>
+              <td><%= blog.views %></td>
+              <td>
+                <a href="/admin/blogs/edit/<%= blog._id %>" class="admin-btn admin-btn-secondary admin-btn-sm">Edit</a>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="4" style="text-align:center;color:var(--admin-muted);">No articles found.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Recent Contact Messages -->
+  <div class="admin-card">
+    <div class="admin-card-head">
+      <div class="admin-card-title">Recent Inquiries</div>
+      <a href="/admin/contacts" style="font-size:12px;color:var(--admin-muted);">View All →</a>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Sender</th>
+          <th>Subject</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (recentContacts && recentContacts.length > 0) { %>
+          <% recentContacts.forEach(contact => { %>
+            <tr>
+              <td>
+                <strong><%= contact.name %></strong><br>
+                <span style="font-size:11px;color:var(--admin-muted);font-family:var(--admin-mono);"><%= contact.email %></span>
+              </td>
+              <td><%= contact.subject %></td>
+              <td><%= formatDate(contact.createdAt) %></td>
+              <td>
+                <span class="admin-badge <%= contact.status === 'unread' ? 'admin-badge-danger' : 'admin-badge-muted' %>">
+                  <%= contact.status %>
+                </span>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="4" style="text-align:center;color:var(--admin-muted);">No messages received yet.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Most Popular Articles -->
+<div class="admin-card" style="margin-top:24px;">
+  <div class="admin-card-head">
+    <div class="admin-card-title">Most Read Technical Articles</div>
+  </div>
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Article</th>
+        <th>Category</th>
+        <th>Views</th>
+        <th>Likes</th>
+        <th>Published Date</th>
+        <th>Direct Link</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (popularBlogs && popularBlogs.length > 0) { %>
+        <% popularBlogs.forEach(p => { %>
+          <tr>
+            <td><strong><%= p.title %></strong></td>
+            <td><%= p.category %></td>
+            <td><strong style="color:var(--admin-success)"><%= p.views %></strong></td>
+            <td><%= p.likes %></td>
+            <td><%= formatDate(p.publishedAt) %></td>
+            <td>
+              <a href="/blog/<%= p.slug %>" target="_blank" style="color:var(--admin-primary);font-size:12px;">View Live ↗</a>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
+        <tr><td colspan="6" style="text-align:center;color:var(--admin-muted);">No published articles with view records yet.</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('partials/footer') %>

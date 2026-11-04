@@ -1,0 +1,76 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="app" tabindex="-1">
+  <section class="view">
+    <div class="xhead" style="margin-bottom:28px">
+      <span class="t">contact</span>
+      <span style="font-family:var(--mono);font-size:12px;color:var(--muted)">let's connect</span>
+    </div>
+
+    <div class="about" style="align-items:start">
+      <div>
+        <h1 style="font-size: clamp(32px, 5vw, 42px); font-weight: 700; letter-spacing: -.02em;">Let's Connect</h1>
+        <p style="color:var(--muted);margin-top:16px;line-height:1.7;max-width:50ch;">
+          Have an interesting idea, a technical question, or want to discuss software engineering? I'd love to hear from you.
+        </p>
+
+        <!-- Social Links Cards -->
+        <div class="socials-grid" style="margin-top:28px;">
+          <a class="scard" href="https://github.com/ayusjha2005" target="_blank" rel="noopener" style="--c:#ffffff;--i:0">
+            <span class="sbadge">
+              <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+            </span>
+            <span><span class="sname">GitHub</span><br><span class="shandle">@ayusjha2005</span></span>
+            <span class="sarrow">↗</span>
+          </a>
+
+          <a class="scard" href="https://www.linkedin.com/in/kumar-ayush-322294385/" target="_blank" rel="noopener" style="--c:#0a66c2;--i:1">
+            <span class="sbadge">
+              <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20"><rect x="2.5" y="2.5" width="19" height="19" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7.4" cy="7.6" r="1.3" fill="currentColor"/><path d="M6.8 10.2v7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10.6 17.2v-7M10.6 13.2c0-1.8 1.2-2.9 2.8-2.9s2.5 1 2.5 2.9v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            <span><span class="sname">LinkedIn</span><br><span class="shandle">in/kumar-ayush</span></span>
+            <span class="sarrow">↗</span>
+          </a>
+
+          <a class="scard" href="https://x.com/ayushjha2005" target="_blank" rel="noopener" style="--c:#1d9bf0;--i:2">
+            <span class="sbadge">
+              <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.912-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </span>
+            <span><span class="sname">Twitter / X</span><br><span class="shandle">@ayushjha2005</span></span>
+            <span class="sarrow">↗</span>
+          </a>
+
+          <a class="scard" href="mailto:reach2kr.ayush@gmail.com" style="--c:#e5353b;--i:3" data-copy-email="1">
+            <span class="sbadge">
+              <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            </span>
+            <span><span class="sname">Email</span><br><span class="shandle">reach2kr.ayush@gmail.com</span></span>
+            <span class="sarrow">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact" style="margin-top:0">
+        <h3>send a message</h3>
+        <p>Your message will be sent directly to my dashboard.</p>
+        <form id="contactForm" method="POST" action="/contact" novalidate>
+          <div class="cgrid">
+            <input name="name" placeholder="your name" required maxlength="100" aria-label="your name">
+            <input name="email" type="email" placeholder="your email" required maxlength="254" aria-label="your email">
+          </div>
+          <input name="subject" placeholder="subject" maxlength="150" aria-label="subject">
+          <textarea name="message" placeholder="your message" required minlength="5" maxlength="3000" rows="5" aria-label="message"></textarea>
+          <!-- Honeypot spam trap (hidden from users) -->
+          <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn primary" type="submit">send</button>
+          <div class="msg" id="contactMsg">&nbsp;</div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

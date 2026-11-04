@@ -1,0 +1,60 @@
+<%- include('../partials/nav') %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="admin-title">Contact Inquiries & Messages</h1>
+    <div class="admin-subtitle">Read messages submitted through the website's contact form.</div>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="/admin/contacts" class="admin-btn <%= activeStatus === 'all' ? 'admin-btn-primary' : 'admin-btn-secondary' %> admin-btn-sm">All</a>
+    <a href="/admin/contacts?status=unread" class="admin-btn <%= activeStatus === 'unread' ? 'admin-btn-primary' : 'admin-btn-secondary' %> admin-btn-sm">Unread Only</a>
+    <a href="/admin/contacts?status=read" class="admin-btn <%= activeStatus === 'read' ? 'admin-btn-primary' : 'admin-btn-secondary' %> admin-btn-sm">Read Only</a>
+  </div>
+</div>
+
+<div class="admin-card">
+  <% if (contacts && contacts.length > 0) { %>
+    <% contacts.forEach(msg => { %>
+      <div style="padding: 20px; border-bottom: 1px solid var(--admin-border); background: <%= msg.status === 'unread' ? 'rgba(229, 53, 59, 0.04)' : 'transparent' %>;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div>
+            <span class="admin-badge <%= msg.status === 'unread' ? 'admin-badge-danger' : 'admin-badge-muted' %>">
+              <%= msg.status %>
+            </span>
+            <strong style="font-size:15px;margin-left:8px;"><%= msg.name %></strong>
+            <span style="color:var(--admin-muted);font-size:13px;font-family:var(--admin-mono);margin-left:6px;">&lt;<%= msg.email %>&gt;</span>
+          </div>
+          <div style="font-size:12px;color:var(--admin-muted);font-family:var(--admin-mono);">
+            <%= formatDate(msg.createdAt) %>
+          </div>
+        </div>
+
+        <div style="font-weight:600;margin-bottom:8px;font-size:14px;color:#fff;">
+          Subject: <%= msg.subject %>
+        </div>
+
+        <div style="color:var(--admin-text);line-height:1.6;white-space:pre-wrap;background:rgba(0,0,0,0.25);padding:14px 16px;border-radius:8px;border:1px solid var(--admin-border);font-size:13px;">
+<%= msg.message %>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+          <a href="mailto:<%= msg.email %>?subject=Re: <%= encodeURIComponent(msg.subject) %>" class="admin-btn admin-btn-secondary admin-btn-sm">Reply by Email ↗</a>
+          <form method="POST" action="/admin/contacts/toggle/<%= msg._id %>" style="display:inline;">
+            <button type="submit" class="admin-btn admin-btn-secondary admin-btn-sm">
+              Mark as <%= msg.status === 'unread' ? 'Read' : 'Unread' %>
+            </button>
+          </form>
+          <form method="POST" action="/admin/contacts/delete/<%= msg._id %>" onsubmit="return confirm('Delete this message?');" style="display:inline;">
+            <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">Delete</button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div style="padding:48px;text-align:center;color:var(--admin-muted);">
+      No messages found in this view.
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

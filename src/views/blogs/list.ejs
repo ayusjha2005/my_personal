@@ -1,0 +1,79 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="app" tabindex="-1">
+  <section class="view">
+    <div class="xhead" style="margin-bottom: 24px;">
+      <span class="t">writings & technical publications</span>
+      <span><%= totalBlogs %> <%= totalBlogs === 1 ? 'writing' : 'writings' %> published</span>
+    </div>
+
+    <!-- Category Chips -->
+    <div class="category-chips">
+      <a href="/writings?<%= searchQuery ? 'search=' + encodeURIComponent(searchQuery) + '&' : '' %>sort=<%= currentSort %>" class="cat-chip <%= activeCategory === 'All' ? 'on' : '' %>">All</a>
+      <% categories.filter(c => c !== 'All').forEach(cat => { %>
+        <a href="/writings?category=<%= encodeURIComponent(cat) %>&<%= searchQuery ? 'search=' + encodeURIComponent(searchQuery) + '&' : '' %>sort=<%= currentSort %>" class="cat-chip <%= activeCategory === cat ? 'on' : '' %>"><%= cat %></a>
+      <% }) %>
+    </div>
+
+    <!-- Search & Sort Toolbar -->
+    <div class="toolbar">
+      <div class="row2">
+        <form action="/writings" method="GET" class="search" style="flex:1">
+          <% if (activeCategory !== 'All') { %>
+            <input type="hidden" name="category" value="<%= activeCategory %>">
+          <% } %>
+          <span style="color:var(--muted);font-family:var(--mono)">/</span>
+          <input id="q" name="search" placeholder="search writings..." value="<%= searchQuery %>" autocomplete="off">
+          <span class="count"><%= blogs.length %> / <%= totalBlogs %></span>
+        </form>
+        <div class="seg" role="group" aria-label="Sort">
+          <a href="/writings?<%= activeCategory !== 'All' ? 'category=' + encodeURIComponent(activeCategory) + '&' : '' %><%= searchQuery ? 'search=' + encodeURIComponent(searchQuery) + '&' : '' %>sort=newest" class="btn <%= currentSort === 'newest' ? 'on' : '' %>" style="padding: 5px 12px; font-family:var(--mono); font-size:12px; border:none; background:transparent;">newest</a>
+          <a href="/writings?<%= activeCategory !== 'All' ? 'category=' + encodeURIComponent(activeCategory) + '&' : '' %><%= searchQuery ? 'search=' + encodeURIComponent(searchQuery) + '&' : '' %>sort=oldest" class="btn <%= currentSort === 'oldest' ? 'on' : '' %>" style="padding: 5px 12px; font-family:var(--mono); font-size:12px; border:none; background:transparent;">oldest</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog Posts Grid -->
+    <div class="posts" id="posts">
+      <% if (blogs && blogs.length > 0) { %>
+        <% blogs.forEach((blog, index) => { %>
+          <a class="post" style="--i:<%= index %>" href="/writings/<%= blog.slug %>" data-mx>
+            <div class="meta">
+              <span><%= formatDate(blog.publishedAt || blog.createdAt) %></span>
+              <span>·</span>
+              <span><%= blog.readTime || 3 %> min read</span>
+              <span>·</span>
+              <span style="color:var(--red)"><%= blog.category %></span>
+            </div>
+            <h3><%= blog.title %></h3>
+            <p><%= blog.excerpt %></p>
+            <span class="arrow">↗</span>
+          </a>
+        <% }) %>
+      <% } else { %>
+        <div class="empty">No writings match your current query or category filter.</div>
+      <% } %>
+    </div>
+
+    <!-- Pagination -->
+    <% if (totalPages > 1) { %>
+      <div class="pagination">
+        <% if (currentPage > 1) { %>
+          <a href="/writings?<%= activeCategory !== 'All' ? 'category=' + encodeURIComponent(activeCategory) + '&' : '' %><%= searchQuery ? 'search=' + encodeURIComponent(searchQuery) + '&' : '' %>sort=<%= currentSort %>&page=<%= currentPage - 1 %>" class="page-btn">← Previous</a>
+        <% } %>
+        
+        <% for (let p = 1; p <= totalPages; p++) { %>
+          <a href="/writings?<%= activeCategory !== 'All' ? 'category=' + encodeURIComponent(activeCategory) + '&' : '' %><%= searchQuery ? 'search=' + encodeURIComponent(searchQuery) + '&' : '' %>sort=<%= currentSort %>&page=<%= p %>" class="page-btn <%= p === currentPage ? 'active' : '' %>"><%= p %></a>
+        <% } %>
+
+        <% if (currentPage < totalPages) { %>
+          <a href="/writings?<%= activeCategory !== 'All' ? 'category=' + encodeURIComponent(activeCategory) + '&' : '' %><%= searchQuery ? 'search=' + encodeURIComponent(searchQuery) + '&' : '' %>sort=<%= currentSort %>&page=<%= currentPage + 1 %>" class="page-btn">Next →</a>
+        <% } %>
+      </div>
+    <% } %>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

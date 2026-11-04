@@ -1,0 +1,75 @@
+<%- include('../partials/nav') %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="admin-title">Projects Portfolio</h1>
+    <div class="admin-subtitle">Manage portfolio projects, tech stacks, repositories, and live demo links.</div>
+  </div>
+  <a href="/admin/projects/new" class="admin-btn admin-btn-primary">+ Add New Project</a>
+</div>
+
+<div class="admin-card">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Order</th>
+        <th>Project</th>
+        <th>Technologies</th>
+        <th>Featured</th>
+        <th>Links</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (projects && projects.length > 0) { %>
+        <% projects.forEach(project => { %>
+          <tr>
+            <td style="font-family:var(--admin-mono);"><%= project.order %></td>
+            <td>
+              <strong><%= project.title %></strong><br>
+              <span style="font-size:12px;color:var(--admin-muted);"><%= project.description.substring(0, 85) %>...</span>
+            </td>
+            <td>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                <% project.technologies.forEach(t => { %>
+                  <span class="admin-badge admin-badge-muted"><%= t %></span>
+                <% }) %>
+              </div>
+            </td>
+            <td>
+              <% if (project.featured) { %>
+                <span class="admin-badge admin-badge-success">Featured ★</span>
+              <% } else { %>
+                <span style="color:var(--admin-muted)">-</span>
+              <% } %>
+            </td>
+            <td>
+              <% if (project.githubUrl) { %>
+                <a href="<%= project.githubUrl %>" target="_blank" style="color:var(--admin-primary);font-size:12px;margin-right:8px;">GitHub ↗</a>
+              <% } %>
+              <% if (project.liveUrl) { %>
+                <a href="<%= project.liveUrl %>" target="_blank" style="color:var(--admin-success);font-size:12px;">Live ↗</a>
+              <% } %>
+            </td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <a href="/admin/projects/edit/<%= project._id %>" class="admin-btn admin-btn-secondary admin-btn-sm">Edit</a>
+                <form method="POST" action="/admin/projects/delete/<%= project._id %>" onsubmit="return confirm('Delete this project?');" style="display:inline;">
+                  <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">Del</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
+        <tr>
+          <td colspan="6" style="text-align:center;padding:40px;color:var(--admin-muted);">
+            No projects added yet. <a href="/admin/projects/new" style="color:var(--admin-primary)">Add your first project.</a>
+          </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

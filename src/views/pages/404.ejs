@@ -1,0 +1,17 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="app" tabindex="-1">
+  <section class="view" style="text-align:center;padding:100px 20px;">
+    <h1 style="font-size: clamp(60px, 12vw, 110px); font-weight: 700; letter-spacing: -.04em; color: var(--red);">404</h1>
+    <h2 style="font-size: 20px; font-weight: 600; margin-top: 10px;"><%= typeof message !== 'undefined' ? message : 'This page wandered off into the digital void.' %></h2>
+    <p style="color:var(--muted);margin-top:10px;font-family:var(--mono);font-size:13px;">The requested URL could not be found on this server.</p>
+    <div style="margin-top:30px;">
+      <a class="btn primary" href="/">return home</a>
+      <a class="btn" href="/blogs" style="margin-left: 10px;">explore blogs</a>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

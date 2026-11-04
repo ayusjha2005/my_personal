@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= pageTitle %></title>
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-login-wrap">
+  <div class="admin-login-card">
+    <div class="admin-login-brand">
+      <span style="color:var(--admin-primary)">~/</span>ayush<span style="color:var(--admin-primary)">.admin</span>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="admin-alert admin-alert-error"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="/admin/login">
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="username">Username or Email</label>
+        <input class="admin-form-input" type="text" id="username" name="username" required autofocus placeholder="admin">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="password">Password</label>
+        <input class="admin-form-input" type="password" id="password" name="password" required placeholder="••••••••">
+      </div>
+
+      <button class="admin-btn admin-btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:10px;">
+        Sign In to Dashboard
+      </button>
+
+      <div style="text-align:center;margin-top:20px;">
+        <a href="/" style="font-size:12px;color:var(--admin-muted);">← Back to Public Website</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

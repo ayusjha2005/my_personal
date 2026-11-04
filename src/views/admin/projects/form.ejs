@@ -1,0 +1,80 @@
+<%- include('../partials/nav') %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="admin-title"><%= isEdit ? 'Edit Project' : 'Add New Project' %></h1>
+    <div class="admin-subtitle"><%= isEdit ? project.title : 'Showcase your engineering systems, apps, and concepts.' %></div>
+  </div>
+  <a href="/admin/projects" class="admin-btn admin-btn-secondary">← Back to Projects</a>
+</div>
+
+<div class="admin-card" style="padding:28px;">
+  <form method="POST" action="<%= isEdit ? '/admin/projects/edit/' + project._id : '/admin/projects/new' %>" enctype="multipart/form-data">
+    <div class="admin-form-group">
+      <label class="admin-form-label" for="title">Project Title *</label>
+      <input class="admin-form-input" type="text" id="title" name="title" value="<%= project.title %>" required placeholder="e.g. Aarogyam">
+    </div>
+
+    <div class="admin-form-row">
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="slug">URL Slug (leave blank to auto-generate)</label>
+        <input class="admin-form-input" type="text" id="slug" name="slug" value="<%= project.slug %>" placeholder="aarogyam">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="order">Display Order (lower numbers appear first)</label>
+        <input class="admin-form-input" type="number" id="order" name="order" value="<%= project.order %>" placeholder="1">
+      </div>
+    </div>
+
+    <div class="admin-form-group">
+      <label class="admin-form-label" for="technologies">Technologies (comma-separated) *</label>
+      <input class="admin-form-input" type="text" id="technologies" name="technologies" value="<%= Array.isArray(project.technologies) ? project.technologies.join(', ') : project.technologies %>" required placeholder="PostgreSQL, Supabase, Backend Integration, Database Design">
+    </div>
+
+    <div class="admin-form-group">
+      <label class="admin-form-label" for="description">Project Description *</label>
+      <textarea class="admin-form-input" id="description" name="description" rows="4" required placeholder="Describe what the project does, key technical decisions, and architecture..."><%= project.description %></textarea>
+    </div>
+
+    <div class="admin-form-row">
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="githubUrl">GitHub Repository URL (Optional)</label>
+        <input class="admin-form-input" type="url" id="githubUrl" name="githubUrl" value="<%= project.githubUrl %>" placeholder="https://github.com/ayusjha2005/...">
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="liveUrl">Live Demo / Production URL (Optional)</label>
+        <input class="admin-form-input" type="url" id="liveUrl" name="liveUrl" value="<%= project.liveUrl %>" placeholder="https://...">
+      </div>
+    </div>
+
+    <div class="admin-form-row">
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="image">Project Cover Image (Optional)</label>
+        <input class="admin-form-input" type="file" id="image" name="image" accept="image/*">
+        <% if (project.image) { %>
+          <div style="margin-top:6px;font-size:11px;color:var(--admin-muted);">
+            Current Image: <a href="<%= project.image %>" target="_blank" style="color:var(--admin-primary)">View File</a>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="admin-form-group" style="display:flex;align-items:center;padding-top:28px;">
+        <label class="admin-checkbox-label">
+          <input type="checkbox" name="featured" <%= project.featured ? 'checked' : '' %>>
+          <span><strong>Feature on Home Page</strong></span>
+        </label>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--admin-border);padding-top:20px;margin-top:16px;display:flex;justify-content:flex-end;gap:10px;">
+      <a href="/admin/projects" class="admin-btn admin-btn-secondary">Cancel</a>
+      <button type="submit" class="admin-btn admin-btn-primary">
+        <%= isEdit ? 'Save Changes' : 'Create Project' %>
+      </button>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>

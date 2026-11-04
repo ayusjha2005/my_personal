@@ -1,0 +1,343 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<div class="progress" id="readBar"></div>
+
+<main id="app" tabindex="-1">
+  <div class="article-wrap view">
+    <!-- Sticky Table of Contents -->
+    <aside class="toc" id="toc">
+      <h4>on this page</h4>
+      <% if (locals.toc && toc.length > 0) { %>
+        <% toc.forEach(item => { %>
+          <a href="#<%= item.id %>"><%= item.text %></a>
+        <% }) %>
+      <% } else { %>
+        <span style="color:var(--muted);font-size:12px;">Overview</span>
+      <% } %>
+    </aside>
+
+    <!-- Main Article Body -->
+    <article>
+      <div class="crumb">
+        <a href="/">home</a> / <a href="/writings">writings</a> / <a href="/writings?category=<%= encodeURIComponent(blog.category) %>"><%= blog.category %></a> / <%= blog.slug %>
+      </div>
+
+      <% if (blog.coverImage) { %>
+        <div style="margin-bottom: 28px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line);">
+          <img src="<%= blog.coverImage %>" alt="<%= blog.title %>" style="width: 100%; max-height: 400px; object-fit: cover; display: block;" loading="lazy">
+        </div>
+      <% } %>
+
+      <h1><%= blog.title %></h1>
+
+      <div class="byline">
+        <span>By <%= blog.author || 'Ayush Jha' %></span>
+        <span>·</span>
+        <span><%= formatDate(blog.publishedAt || blog.createdAt) %></span>
+        <span>·</span>
+        <span><%= blog.readTime %> min read</span>
+        <span>·</span>
+        <span><%= blog.views %> views</span>
+        <span>·</span>
+        <span style="color:var(--red)"><%= blog.category %></span>
+      </div>
+
+      <!-- Reading Font Size Controls -->
+      <div class="reader-tools" aria-label="reading settings">
+        <span>text size</span>
+        <button type="button" data-reader="down" aria-label="smaller text">A−</button>
+        <button type="button" data-reader="up" aria-label="larger text">A+</button>
+      </div>
+
+      <!-- Terminal Article Window -->
+      <div class="terminal-article-panel article-terminal-target" data-slug="<%= blog.slug %>" style="margin-top: 28px;">
+        <div class="terminal-titlebar">
+          <div class="terminal-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="terminal-titlebar-text">ayush@blog: ~/posts/<%= blog.slug %>.md</div>
+        </div>
+
+        <div class="terminal-cmd-line">
+          <span class="terminal-prompt-user">ayush@blog:~$</span>
+          <span class="terminal-cmd-text"></span>
+          <span class="term-cursor terminal-cmd-cursor"></span>
+        </div>
+
+        <div id="body" class="terminal-article-content">
+          <%- renderedHtml %>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <% if (blog.tags && blog.tags.length > 0) { %>
+        <div style="margin-top: 36px; display: flex; flex-wrap: wrap; gap: 8px;">
+          <% blog.tags.forEach(tag => { %>
+            <a href="/writings?search=<%= encodeURIComponent(tag) %>" class="project-tag" style="font-size:12px;">#<%= tag %></a>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <!-- Like Corner Card -->
+      <div class="like-corner-card">
+        <div class="like-corner-info">
+          <h4>Enjoyed this technical writing?</h4>
+          <p>Tap to show appreciation or share it with fellow software engineers.</p>
+        </div>
+        <div class="like-corner-action">
+          <button class="like-corner-btn" id="likeBtn" type="button" data-slug="<%= blog.slug %>" aria-label="Like this writing">
+            <span class="heart" id="heart">♡</span>
+            <span>Appreciate</span>
+            <span class="like-pill" id="likeCount"><%= blog.likes %></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive Actions Row: Share & Copy -->
+      <div class="actions-row">
+        <a class="btn" id="shareX" href="https://x.com/intent/post?text=<%= encodeURIComponent(blog.title + ' by @ayushjha2005') %>&url=<%= encodeURIComponent('https://ayushjha.dev/writings/' + blog.slug) %>" target="_blank" rel="noopener">share on X ↗</a>
+        <button class="btn" id="nativeShare" type="button">share ↗</button>
+        <button class="btn" id="copyLink" type="button">copy link</button>
+      </div>
+
+      <!-- Comments Section -->
+      <section class="comments-section" id="comments">
+        <div class="comments-head">
+          <h3>Discussion & Thoughts (<%= locals.comments ? comments.length : 0 %>)</h3>
+          <p>Have a question or feedback? Join the engineering conversation below.</p>
+        </div>
+
+        <% if (locals.allowComments !== false) { %>
+          <form class="comment-form" action="/writings/<%= blog.slug %>/comments" method="POST">
+            <div class="cgrid">
+              <input type="text" name="author" placeholder="Your name (e.g. Alex Chen)" required maxlength="80">
+              <input type="email" name="email" placeholder="Your email (optional, private)">
+            </div>
+            <textarea name="content" placeholder="Share your insights, constructive critique, or questions..." rows="4" required minlength="2" maxlength="1500"></textarea>
+            <!-- Honeypot -->
+            <input type="text" name="honeypot" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none">
+            <button class="btn primary" type="submit">Post Comment</button>
+          </form>
+        <% } else { %>
+          <div class="empty" style="margin: 20px 0;">Comments are currently closed for this article.</div>
+        <% } %>
+
+        <!-- Comments List -->
+        <div class="comments-list">
+          <% if (locals.comments && comments.length > 0) { %>
+            <% comments.forEach(comment => { %>
+              <div class="comment-item" id="comment-<%= comment._id %>">
+                <div class="comment-header">
+                  <div class="comment-author-badge"><%= (comment.author || 'R').charAt(0).toUpperCase() %></div>
+                  <div class="comment-author-info">
+                    <span class="comment-author-name"><%= comment.author %></span>
+                    <span class="comment-date"><%= formatDate(comment.createdAt) %></span>
+                  </div>
+                  <button class="comment-like-btn" type="button" data-comment-id="<%= comment._id %>" aria-label="Like comment">
+                    <span class="c-heart">♡</span>
+                    <span class="c-likes"><%= comment.likes || 0 %></span>
+                  </button>
+                </div>
+                <div class="comment-body"><%= comment.content %></div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="empty" style="padding: 24px 0; text-align: left;">Be the first to share your thoughts on this writing!</div>
+          <% } %>
+        </div>
+      </section>
+
+      <!-- Related Articles -->
+      <% if (locals.relatedBlogs && relatedBlogs.length > 0) { %>
+        <div class="related">
+          <h4>keep reading</h4>
+          <div class="posts">
+            <% relatedBlogs.forEach((rel, index) => { %>
+              <a class="post" style="--i:<%= index %>" href="/writings/<%= rel.slug %>" data-mx>
+                <div class="meta">
+                  <span><%= formatDate(rel.publishedAt || rel.createdAt) %></span>
+                  <span>·</span>
+                  <span><%= rel.readTime || 3 %> min</span>
+                </div>
+                <h3><%= rel.title %></h3>
+                <p><%= rel.excerpt %></p>
+                <span class="arrow">↗</span>
+              </a>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Previous / Next Navigation -->
+      <div class="pn">
+        <% if (locals.prevBlog) { %>
+          <a class="btn" href="/writings/<%= prevBlog.slug %>">← <%= prevBlog.title %></a>
+        <% } else { %>
+          <span></span>
+        <% } %>
+
+        <% if (locals.nextBlog) { %>
+          <a class="btn" href="/writings/<%= nextBlog.slug %>"><%= nextBlog.title %> →</a>
+        <% } else { %>
+          <span></span>
+        <% } %>
+      </div>
+    </article>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>
+<script>
+  // Article Like Corner handler
+  const likeBtn = document.getElementById('likeBtn');
+  if (likeBtn) {
+    let liked = false;
+    try { liked = localStorage.getItem('liked_' + likeBtn.dataset.slug) === '1'; } catch (e) {}
+    if (liked) {
+      likeBtn.classList.add('liked');
+      const h = document.getElementById('heart');
+      if (h) h.textContent = '♥';
+    }
+
+    likeBtn.addEventListener('click', async () => {
+      liked = !liked;
+      likeBtn.classList.toggle('liked', liked);
+      const h = document.getElementById('heart');
+      if (h) h.textContent = liked ? '♥' : '♡';
+
+      try { localStorage.setItem('liked_' + likeBtn.dataset.slug, liked ? '1' : '0'); } catch (e) {}
+
+      if (liked && window.__burst) {
+        const r = likeBtn.getBoundingClientRect();
+        window.__burst(r.left + r.width / 2, r.top + r.height / 2);
+      }
+
+      try {
+        const res = await fetch('/api/posts/' + encodeURIComponent(likeBtn.dataset.slug) + '/like', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ liked }),
+        });
+        const data = await res.json();
+        if (data && typeof data.likes === 'number') {
+          const lc = document.getElementById('likeCount');
+          if (lc) lc.textContent = data.likes;
+        }
+      } catch (e) {
+        console.error('Failed to update like:', e);
+      }
+    });
+  }
+
+  // Comment Like buttons handler
+  document.querySelectorAll('.comment-like-btn').forEach(btn => {
+    const cId = btn.dataset.commentId;
+    let cLiked = false;
+    try { cLiked = localStorage.getItem('c_liked_' + cId) === '1'; } catch (e) {}
+    if (cLiked) {
+      btn.classList.add('liked');
+      const ch = btn.querySelector('.c-heart');
+      if (ch) ch.textContent = '♥';
+    }
+
+    btn.addEventListener('click', async () => {
+      if (btn.classList.contains('liked')) return; // already liked
+      btn.classList.add('liked');
+      const ch = btn.querySelector('.c-heart');
+      if (ch) ch.textContent = '♥';
+      try { localStorage.setItem('c_liked_' + cId, '1'); } catch (e) {}
+
+      try {
+        const res = await fetch('/api/comments/' + encodeURIComponent(cId) + '/like', { method: 'POST' });
+        const data = await res.json();
+        if (data && typeof data.likes === 'number') {
+          const lSpan = btn.querySelector('.c-likes');
+          if (lSpan) lSpan.textContent = data.likes;
+        }
+      } catch (e) {
+        console.error('Failed to like comment:', e);
+      }
+    });
+  });
+
+  // Copy current article link
+  const cl = document.getElementById('copyLink');
+  if (cl) {
+    cl.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        cl.textContent = 'copied ✓';
+      } catch (e) {
+        cl.textContent = 'failed';
+      }
+      setTimeout(() => (cl.textContent = 'copy link'), 1600);
+    });
+  }
+
+  // Native share if supported
+  const ns = document.getElementById('nativeShare');
+  if (ns) {
+    if (!navigator.share) {
+      ns.style.display = 'none';
+    } else {
+      ns.addEventListener('click', async () => {
+        try {
+          await navigator.share({
+            title: document.title,
+            url: window.location.href,
+          });
+        } catch (e) {}
+      });
+    }
+  }
+
+  // Font size adjustments for article
+  const SIZES = ['reader-sm', '', 'reader-lg', 'reader-xl'];
+  let sizeIdx = 1;
+  document.querySelectorAll('[data-reader]').forEach(b => {
+    b.addEventListener('click', () => {
+      document.body.classList.remove('reader-sm', 'reader-lg', 'reader-xl');
+      sizeIdx = Math.max(0, Math.min(SIZES.length - 1, sizeIdx + (b.dataset.reader === 'up' ? 1 : -1)));
+      if (SIZES[sizeIdx]) document.body.classList.add(SIZES[sizeIdx]);
+    });
+  });
+
+  // Mark article as read in localStorage once user finishes reading (scrolled near bottom or 85% of page)
+  (function trackArticleReading() {
+    const slug = "<%= blog.slug %>";
+    let marked = false;
+    try {
+      marked = localStorage.getItem('read:' + slug) === '1';
+    } catch (e) {}
+
+    function markRead() {
+      if (marked) return;
+      marked = true;
+      try {
+        localStorage.setItem('read:' + slug, '1');
+      } catch (e) {}
+      if (window.__updateRobotMood) {
+        window.__updateRobotMood();
+      }
+    }
+
+    // Check on scroll
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY + window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      if (scrollPos >= docHeight - 350 || scrollPos / docHeight > 0.85) {
+        markRead();
+      }
+    }, { passive: true });
+
+    // Also mark read if user likes the article
+    const lb = document.getElementById('likeBtn');
+    if (lb) {
+      lb.addEventListener('click', markRead);
+    }
+  })();
+</script>

@@ -1,0 +1,142 @@
+<%- include('../partials/nav') %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="admin-title">Site Settings & Preferences</h1>
+    <div class="admin-subtitle">Configure your personal blog identity, social links, reader interaction toggles, and security settings.</div>
+  </div>
+</div>
+
+<form method="POST" action="/admin/settings">
+  <div style="display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:start;">
+    
+    <!-- Main Configuration Column -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      
+      <!-- General Identity Card -->
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div class="admin-card-title">Website Identity & Branding</div>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">Site Title (Browser Tab & SEO)</label>
+          <input type="text" name="siteTitle" class="admin-input" value="<%= settings.siteTitle || 'Ayush Jha · tech blog' %>" required>
+          <span style="font-size:11px;color:var(--admin-muted);">Displayed on the browser tab, header title, and search engine previews.</span>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">Owner Display Name</label>
+          <input type="text" name="ownerName" class="admin-input" value="<%= settings.ownerName || 'Ayush Jha' %>" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">Tagline / Subtitle</label>
+          <input type="text" name="tagline" class="admin-input" value="<%= settings.tagline || 'exploring technology · building things · sharing what I learn' %>">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">About / Bio Description</label>
+          <textarea name="bio" class="admin-textarea" rows="4"><%= settings.bio || '' %></textarea>
+          <span style="font-size:11px;color:var(--admin-muted);">Summary bio rendered on the About page and footer introduction.</span>
+        </div>
+      </div>
+
+      <!-- Social Channels Card -->
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div class="admin-card-title">Social Links & Contact Channels</div>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">Contact / Inquiries Email</label>
+          <input type="email" name="contactEmail" class="admin-input" value="<%= settings.contactEmail || 'reach2kr.ayush@gmail.com' %>">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">GitHub Profile URL</label>
+          <input type="url" name="githubUrl" class="admin-input" value="<%= settings.githubUrl || 'https://github.com/ayusjha2005' %>">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">LinkedIn Profile URL</label>
+          <input type="url" name="linkedinUrl" class="admin-input" value="<%= settings.linkedinUrl || 'https://www.linkedin.com/in/kumar-ayush-322294385/' %>">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">Instagram Handle / Profile URL (optional)</label>
+          <input type="url" name="instagramUrl" class="admin-input" value="<%= settings.instagramUrl || '' %>" placeholder="https://instagram.com/yourhandle">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">X / Twitter Profile URL</label>
+          <input type="url" name="xUrl" class="admin-input" value="<%= settings.xUrl || 'https://x.com/ayushjha2005' %>">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Side Column: Feature Toggles & Security -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      
+      <!-- Feature Toggles Card -->
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div class="admin-card-title">Interactive Feature Toggles</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+            <input type="checkbox" name="allowComments" <%= settings.allowComments !== false ? 'checked' : '' %> style="width:18px;height:18px;accent-color:var(--admin-primary)">
+            <div>
+              <strong style="font-size:14px;color:var(--admin-fg);">Allow Reader Comments</strong>
+              <div style="font-size:11px;color:var(--admin-muted);">Enable public commenting on writings & articles</div>
+            </div>
+          </label>
+
+          <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+            <input type="checkbox" name="showRobot" <%= settings.showRobot !== false ? 'checked' : '' %> style="width:18px;height:18px;accent-color:var(--admin-primary)">
+            <div>
+              <strong style="font-size:14px;color:var(--admin-fg);">Show Interactive Robot Helper</strong>
+              <div style="font-size:11px;color:var(--admin-muted);">Enable animated robot buddy and eye tracking</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Security / Admin Password Update Card -->
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div class="admin-card-title">Admin Account & Security</div>
+        </div>
+        <p style="font-size:12px;color:var(--admin-muted);margin-bottom:14px;">Leave password fields blank if you do not wish to change your admin password.</p>
+
+        <div class="admin-form-group">
+          <label class="admin-label">Current Password</label>
+          <input type="password" name="currentPassword" class="admin-input" placeholder="Current password">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">New Password</label>
+          <input type="password" name="newPassword" class="admin-input" placeholder="Min 6 characters">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-label">Confirm New Password</label>
+          <input type="password" name="confirmPassword" class="admin-input" placeholder="Repeat new password">
+        </div>
+      </div>
+
+      <!-- Action Save Button -->
+      <div>
+        <button type="submit" class="admin-btn admin-btn-primary" style="width:100%;padding:14px;font-size:14px;font-weight:600;">
+          💾 Save All Settings
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</form>
+
+<%- include('../partials/footer') %>

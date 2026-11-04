@@ -1,0 +1,25 @@
+<header class="top">
+  <div class="bar">
+    <a class="brand" href="/">~/<span>ayush</span><span class="cursor"></span></a>
+    <nav class="main" aria-label="Main">
+      <a href="/" class="<%= currentPath === '/' ? 'on' : '' %>">home</a>
+      <a href="/writings" class="<%= currentPath.startsWith('/writing') || currentPath.startsWith('/blog') ? 'on' : '' %>">writings</a>
+      <a href="/projects" class="<%= currentPath === '/projects' ? 'on' : '' %>">projects</a>
+      <a href="/skills" class="<%= currentPath === '/skills' ? 'on' : '' %>">skills</a>
+      <a href="/about" class="<%= currentPath === '/about' ? 'on' : '' %>">about</a>
+      <a href="/contact" class="<%= currentPath === '/contact' ? 'on' : '' %>">contact</a>
+    </nav>
+    <div class="right">
+      <button class="burger" id="burger" type="button" aria-label="open menu" aria-expanded="false" aria-controls="drawer">
+        <span></span><span></span><span></span>
+      </button>
+      <button class="kbd-btn" id="buddyToggle" type="button" title="show or hide the racer guide">helper on</button>
+      <button class="kbd-btn" id="openCmdBar" type="button" title="Open terminal command bar (press `)"><span style="color:var(--red);font-weight:700;">&gt;_</span> <kbd>`</kbd></button>
+      <button class="kbd-btn" id="openCmd" type="button">search <kbd>⌘K</kbd></button>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme">
+        <span class="theme-icon"><span class="sun">☀</span><span class="moon">☾</span></span>
+      </button>
+    </div>
+  </div>
+</header>
+<a class="skip" href="#app">skip to content</a>

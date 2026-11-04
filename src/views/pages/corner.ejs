@@ -1,0 +1,70 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="app" tabindex="-1">
+  <section class="view">
+    <div class="xhead" style="margin-bottom:26px">
+      <span class="t">writing corner</span>
+      <span>a small desk for drafts, half-thoughts and the reading list</span>
+    </div>
+
+    <div class="corner">
+      <!-- Tilting 3D Desk with Lamp, Animated Typewriter and Sitter Cat -->
+      <div class="desk">
+        <div class="lamp"></div>
+        <div class="label">drafting <b>~ <%= allBlogs.length %> published</b></div>
+        <div class="paper">
+          <span class="ln" style="width:60%"></span>
+          <span class="ln" style="width:85%"></span>
+          <span class="ln" style="width:40%"></span>
+          <div><span class="ink">exploring the logic behind things</span></div>
+        </div>
+        <svg class="sitter" viewBox="0 0 96 92" aria-hidden="true">
+          <path class="tail" d="M28 84 C8 84 6 60 18 56" stroke="#e8e8e8" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="46" cy="72" rx="26" ry="18" fill="#e8e8e8"/>
+          <circle cx="48" cy="40" r="20" fill="#e8e8e8"/>
+          <path d="M32 30 L34 8 L48 24 Z" fill="#e8e8e8"/><path d="M64 30 L62 8 L48 24 Z" fill="#e8e8e8"/>
+          <path d="M36 28 L37 16 L44 24 Z" fill="#e5353b"/><path d="M60 28 L59 16 L52 24 Z" fill="#e5353b"/>
+          <g class="eyes"><circle cx="41" cy="40" r="2.2" fill="#000"/><circle cx="55" cy="40" r="2.2" fill="#000"/></g>
+          <path d="M46 47 Q48 50 50 47" stroke="#000" stroke-width="1.2" fill="none"/>
+          <g class="writing"><path d="M62 62 L80 52" stroke="#e8e8e8" stroke-width="5" stroke-linecap="round"/><path d="M80 52 L84 46" stroke="#e5353b" stroke-width="3" stroke-linecap="round"/></g>
+        </svg>
+      </div>
+
+      <!-- Scribbles / Floating Notes -->
+      <div class="notes">
+        <h3>scribbles · latest thoughts</h3>
+        <div class="note"><time>oct 2026</time><p>Benchmarking memory allocation strategies in modern C++ projects.</p></div>
+        <div class="note"><time>sep 2026</time><p>Designing relational schemas for healthcare: indexing foreign keys for instant case lookups.</p></div>
+        <div class="note"><time>aug 2026</time><p>Linux syscalls: why \`epoll\` outperforms \`select\` under high concurrency.</p></div>
+        <div class="note"><time>jul 2026</time><p>Keep code clean and modular. A well-designed backend should be easy to reason about.</p></div>
+      </div>
+    </div>
+
+    <!-- Reading List / All Articles -->
+    <div class="corner-list">
+      <div class="xhead"><span class="t">reading list</span><a href="/blogs">all articles →</a></div>
+      <div class="posts">
+        <% if (allBlogs && allBlogs.length > 0) { %>
+          <% allBlogs.forEach((blog, index) => { %>
+            <a class="post" style="--i:<%= index %>" href="/blog/<%= blog.slug %>" data-mx>
+              <div class="meta">
+                <span><%= formatDate(blog.publishedAt || blog.createdAt) %></span>
+                <span>·</span>
+                <span><%= blog.readTime || 3 %> min read</span>
+                <span>·</span>
+                <span style="color:var(--red)"><%= blog.category %></span>
+              </div>
+              <h3><%= blog.title %></h3>
+              <p><%= blog.excerpt %></p>
+              <span class="arrow">↗</span>
+            </a>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

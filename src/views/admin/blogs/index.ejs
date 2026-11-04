@@ -1,0 +1,95 @@
+<%- include('../partials/nav') %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="admin-title">Writings & Articles Management</h1>
+    <div class="admin-subtitle">Create publications, edit drafts, organize categories, and moderate reader comments.</div>
+  </div>
+  <a href="/admin/writings/new" class="admin-btn admin-btn-primary">+ Create New Writing</a>
+</div>
+
+<!-- Filters Bar -->
+<div class="admin-card" style="padding:16px 20px;margin-bottom:20px;">
+  <form method="GET" action="/admin/blogs" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+    <input type="text" name="search" class="admin-form-input" style="width:240px;" placeholder="Search by title..." value="<%= searchQuery %>">
+    
+    <select name="status" class="admin-form-select" style="width:160px;">
+      <option value="all" <%= activeStatus === 'all' ? 'selected' : '' %>>All Statuses</option>
+      <option value="published" <%= activeStatus === 'published' ? 'selected' : '' %>>Published Only</option>
+      <option value="draft" <%= activeStatus === 'draft' ? 'selected' : '' %>>Drafts Only</option>
+    </select>
+
+    <select name="category" class="admin-form-select" style="width:220px;">
+      <option value="All" <%= activeCategory === 'All' ? 'selected' : '' %>>All Categories</option>
+      <% categories.forEach(cat => { %>
+        <option value="<%= cat %>" <%= activeCategory === cat ? 'selected' : '' %>><%= cat %></option>
+      <% }) %>
+    </select>
+
+    <button type="submit" class="admin-btn admin-btn-secondary">Filter</button>
+    <a href="/admin/blogs" class="admin-btn admin-btn-secondary" style="font-size:12px;">Reset</a>
+  </form>
+</div>
+
+<!-- Blogs Table -->
+<div class="admin-card">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Article Details</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Featured</th>
+        <th>Views / Likes</th>
+        <th>Last Updated</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (blogs && blogs.length > 0) { %>
+        <% blogs.forEach(blog => { %>
+          <tr>
+            <td>
+              <strong><%= blog.title %></strong><br>
+              <span style="font-size:11px;color:var(--admin-muted);font-family:var(--admin-mono);">/<%= blog.slug %></span>
+            </td>
+            <td><%= blog.category %></td>
+            <td>
+              <span class="admin-badge <%= blog.status === 'published' ? 'admin-badge-success' : 'admin-badge-warning' %>">
+                <%= blog.status %>
+              </span>
+            </td>
+            <td>
+              <% if (blog.featured) { %>
+                <span class="admin-badge admin-badge-success">Featured ★</span>
+              <% } else { %>
+                <span style="color:var(--admin-muted)">-</span>
+              <% } %>
+            </td>
+            <td><%= blog.views %> / <%= blog.likes %></td>
+            <td><%= formatDate(blog.updatedAt) %></td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <% if (blog.status === 'published') { %>
+                  <a href="/writings/<%= blog.slug %>" target="_blank" class="admin-btn admin-btn-secondary admin-btn-sm" title="View live">View</a>
+                <% } %>
+                <a href="/admin/blogs/edit/<%= blog._id %>" class="admin-btn admin-btn-secondary admin-btn-sm">Edit</a>
+                <form method="POST" action="/admin/blogs/delete/<%= blog._id %>" onsubmit="return confirm('Are you sure you want to permanently delete this article?');" style="display:inline;">
+                  <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">Del</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
+        <tr>
+          <td colspan="7" style="text-align:center;padding:40px;color:var(--admin-muted);">
+            No articles match your filter. <a href="/admin/blogs/new" style="color:var(--admin-primary)">Create one now.</a>
+          </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>
