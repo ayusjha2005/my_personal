@@ -29,8 +29,8 @@ async function deleteCloudinaryAsset(url) {
   try {
     const cloudinary = upload._cloudinary;
     if (!cloudinary) return;
-    // Extract public_id from URL: everything between /upload/ and the extension
-    const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[a-z]+)?$/i);
+    const cleanUrl = url.split('?')[0];
+    const match = cleanUrl.match(/\/upload\/(?:(?:[a-z]_[^/]+\/)+)?(?:v\d+\/)?(.+?)(?:\.[a-z0-9]+)?$/i);
     if (match && match[1]) {
       await cloudinary.uploader.destroy(match[1]);
     }
@@ -277,6 +277,7 @@ exports.deleteBlog = async (req, res, next) => {
     const { id } = req.params;
     const blog = await Blog.findByIdAndDelete(id);
     if (blog) {
+      await deleteCloudinaryAsset(blog.coverImage);
       req.session.success = `Article "${blog.title}" was deleted.`;
     }
     res.redirect('/admin/blogs');
@@ -415,6 +416,7 @@ exports.deleteProject = async (req, res, next) => {
     const { id } = req.params;
     const project = await Project.findByIdAndDelete(id);
     if (project) {
+      await deleteCloudinaryAsset(project.image);
       req.session.success = `Project "${project.title}" deleted.`;
     }
     res.redirect('/admin/projects');

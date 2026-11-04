@@ -242,13 +242,14 @@ async function runTests() {
     assert(adminAnalytics.body.includes('Traffic & Reader Analytics'), 'Admin analytics loaded');
 
     // 22. Admin Blog Creation (CRUD)
+    const uniqueTitle = `Test+Automated+Article+${Date.now()}`;
     const createBlogRes = await request('/admin/blogs/new', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         Cookie: sessionCookieHeader,
       },
-      body: 'title=Test+Automated+Article&category=Web+Development&tags=Test%2C+Dev&excerpt=A+quick+test+excerpt&content=This+is+a+test+post+content.&status=draft',
+      body: `title=${uniqueTitle}&category=Web+Development&tags=Test%2C+Dev&excerpt=A+quick+test+excerpt&content=This+is+a+test+post+content.&status=draft`,
     });
     assert(createBlogRes.status === 302, 'New blog creation redirects to blog list');
 

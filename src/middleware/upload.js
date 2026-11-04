@@ -1,10 +1,11 @@
 /**
- * Upload Middleware — Cloudinary (production) or disk (development)
+ * Upload Middleware — Cloudinary (production) or Disk (development)
  *
  * In production (NODE_ENV=production or when CLOUDINARY_CLOUD_NAME is set),
- * files go directly to Cloudinary. No local disk I/O on serverless functions.
+ * uploads stream directly to Cloudinary using a custom Multer storage engine.
+ * No local disk I/O on serverless functions.
  *
- * In development (no Cloudinary vars), files are saved to public/uploads/.
+ * In development (no Cloudinary credentials), files are saved to public/uploads/.
  */
 
 const multer = require('multer');
@@ -30,39 +31,77 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// ---- Cloudinary path ----
-const useCloudinary =
+/**
+ * Custom Multer storage engine using Cloudinary upload_stream
+ * Eliminates need for outdated/conflicting multer-storage-cloudinary package
+ */
+function CloudinaryStorageEngine(opts) {
+  this.cloudinary = opts.cloudinary;
+}
+
+CloudinaryStorageEngine.prototype._handleFile = function (req, file, cb) {
+  const isProject =
+    (req.baseUrl && req.baseUrl.includes('project')) ||
+    (req.originalUrl && req.originalUrl.includes('project'));
+  const folder = isProject ? 'blog/projects' : 'blog/covers';
+
+  const uploadStream = this.cloudinary.uploader.upload_stream(
+    {
+      folder,
+      resource_type: 'image',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+      transformation: [{ quality: 'auto', fetch_format: 'auto', width: 1200, crop: 'limit' }],
+    },
+    (err, result) => {
+      if (err) return cb(err);
+      cb(null, {
+        path: result.secure_url,
+        url: result.secure_url,
+        secure_url: result.secure_url,
+        filename: result.public_id,
+        public_id: result.public_id,
+        format: result.format,
+        bytes: result.bytes,
+        size: result.bytes,
+      });
+    }
+  );
+
+  file.stream.pipe(uploadStream);
+};
+
+CloudinaryStorageEngine.prototype._removeFile = function (req, file, cb) {
+  if (file && file.public_id) {
+    this.cloudinary.uploader.destroy(file.public_id, (err, result) => {
+      cb(err, result);
+    });
+  } else {
+    cb(null);
+  }
+};
+
+// Check if Cloudinary credentials are fully configured
+const useCloudinary = Boolean(
   process.env.CLOUDINARY_CLOUD_NAME &&
   process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET;
+  process.env.CLOUDINARY_API_SECRET
+);
 
 let upload;
 
 if (useCloudinary) {
   const cloudinary = require('cloudinary').v2;
-  const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true,
   });
 
-  const storage = new CloudinaryStorage({
-    cloudinary,
-    params: async (req, file) => {
-      const folder = req.baseUrl.includes('project') ? 'blog/projects' : 'blog/covers';
-      return {
-        folder,
-        allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-        transformation: [{ quality: 'auto', fetch_format: 'auto', width: 1200, crop: 'limit' }],
-      };
-    },
-  });
+  const storage = new CloudinaryStorageEngine({ cloudinary });
 
   upload = multer({ storage, fileFilter, limits: { fileSize: MAX_SIZE } });
-
-  // Expose cloudinary instance for cleanup in controllers
   upload._cloudinary = cloudinary;
 } else {
   // ---- Local disk path (dev only) ----
@@ -80,6 +119,7 @@ if (useCloudinary) {
   });
 
   upload = multer({ storage, fileFilter, limits: { fileSize: MAX_SIZE } });
+  upload._cloudinary = null;
 }
 
 module.exports = upload;

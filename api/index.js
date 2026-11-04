@@ -9,14 +9,10 @@ const { connectDB } = require('../src/config/database');
 const createApp = require('../src/app');
 
 let appInstance = null;
-let dbConnected = false;
 
 async function getApp() {
-  // Reuse connection across warm invocations (serverless connection reuse)
-  if (!dbConnected) {
-    await connectDB();
-    dbConnected = true;
-  }
+  // Ensure connection is active (instant return if already connected)
+  await connectDB();
   if (!appInstance) {
     appInstance = createApp();
   }
