@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const mongoose = require('mongoose');
+const { clientPromise } = require('./config/database');
 
 const viewGlobals = require('./middleware/viewGlobals');
 const indexRoutes = require('./routes/indexRoutes');
@@ -51,7 +51,13 @@ function createApp() {
   app.set('views', viewsDir === rootViewsDir ? viewsDir : [viewsDir, rootViewsDir]);
   app.set('view engine', 'ejs');
 
-  // Session configuration
+  // --- Session configuration ---
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  if (isProduction && !process.env.SESSION_SECRET) {
+    throw new Error('[FATAL] SESSION_SECRET environment variable is required in production.');
+  }
+
   const sessionConfig = {
     secret: process.env.SESSION_SECRET || 'ayush-tech-blog-session-secret-98234710',
     resave: false,
@@ -59,22 +65,37 @@ function createApp() {
     name: 'ayush_session',
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProduction,
       sameSite: 'lax',
       maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
     },
   };
 
-  // Attach MongoStore if mongoose is connected
-  if (mongoose.connection && mongoose.connection.readyState !== 0) {
+  if (isProduction) {
+    // Always use MongoStore in production — clientPromise resolves to the
+    // native MongoClient once connectDB() completes in api/index.js.
+    // MongoStore holds the promise internally; no readyState check needed.
     sessionConfig.store = MongoStore.create({
-      clientPromise: mongoose.connection.asPromise().then((conn) => conn.getClient()),
+      clientPromise,          // Promise<MongoClient> — resolved before first request
+      collectionName: 'sessions',
+      ttl: 14 * 24 * 60 * 60, // 14 days in seconds
+      autoRemove: 'native',
+    });
+    console.log('[Session] Store: MongoStore (MongoDB Atlas)');
+  } else {
+    // Development: use the same MongoStore backed by in-memory MongoDB
+    // (clientPromise resolves to the in-memory MongoClient from connectDB).
+    sessionConfig.store = MongoStore.create({
+      clientPromise,
       collectionName: 'sessions',
       ttl: 14 * 24 * 60 * 60,
+      autoRemove: 'native',
     });
+    console.log('[Session] Store: MongoStore (local/in-memory MongoDB)');
   }
 
   app.use(session(sessionConfig));
+
 
   // Global view variables & flash messages
   app.use(viewGlobals);

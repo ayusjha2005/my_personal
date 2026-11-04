@@ -2,6 +2,17 @@ const mongoose = require('mongoose');
 
 let mongodInstance = null;
 
+/**
+ * A Promise that resolves to the native MongoClient once connectDB() completes.
+ * Assigned once — reused across all serverless invocations and by MongoStore.
+ */
+let _clientPromiseResolve;
+let _clientPromiseReject;
+const clientPromise = new Promise((resolve, reject) => {
+  _clientPromiseResolve = resolve;
+  _clientPromiseReject = reject;
+});
+
 async function connectDB() {
   // Reuse existing connection across serverless invocations
   if (mongoose.connection && mongoose.connection.readyState === 1) {
@@ -21,9 +32,12 @@ async function connectDB() {
         serverSelectionTimeoutMS: 5000,
       });
       console.log('MongoDB connected successfully to:', mongoose.connection.host);
+      // Resolve the shared clientPromise so MongoStore can acquire the native client
+      _clientPromiseResolve(mongoose.connection.getClient());
       return mongoose.connection;
     } catch (err) {
       console.error('Failed to connect to configured MONGODB_URI:', err.message);
+      _clientPromiseReject(err);
       if (process.env.NODE_ENV === 'production') {
         throw err;
       }
@@ -39,6 +53,8 @@ async function connectDB() {
     console.log('Starting in-memory MongoDB instance at:', memoryUri);
     await mongoose.connect(memoryUri);
     console.log('In-memory MongoDB connected successfully for local development.');
+    // Resolve clientPromise for in-memory dev connection too
+    _clientPromiseResolve(mongoose.connection.getClient());
     return mongoose.connection;
   } catch (err) {
     console.error('In-memory MongoDB fallback error:', err.message);
@@ -53,4 +69,4 @@ async function closeDB() {
   }
 }
 
-module.exports = { connectDB, closeDB };
+module.exports = { connectDB, closeDB, clientPromise };
