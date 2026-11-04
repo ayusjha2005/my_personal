@@ -59,7 +59,7 @@ exports.logout = (req, res) => {
     if (err) {
       console.error('Logout error:', err);
     }
-    res.clearCookie('connect.sid');
+    res.clearCookie('ayush_session');
     res.redirect('/admin/login');
   });
 };

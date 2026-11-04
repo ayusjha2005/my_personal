@@ -219,45 +219,54 @@ Verifies:
 
 ---
 
-## ☁️ Deployment Guide (Render / Railway)
+## ☁️ Deployment Guide (Vercel + MongoDB Atlas + Cloudinary)
 
-### Recommended: Render (Web Service)
+This project is configured for serverless deployment on **Vercel** with **MongoDB Atlas** for persistent document/session storage and **Cloudinary** for persistent media uploads.
 
-1. **Push to GitHub**:
-   Ensure all changes are pushed to `https://github.com/ayusjha2005/personal_blog`.
+### 1. MongoDB Atlas Setup
+1. Log in to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) and create a free Shared Cluster (M0).
+2. Under **Security** &rarr; **Database Access**, create a user (e.g. `ayush_admin`) with read/write privileges.
+3. Under **Security** &rarr; **Network Access**, click **Add IP Address** and select **Allow Access from Anywhere** (`0.0.0.0/0`) so Vercel's serverless lambdas can connect.
+4. Under **Deployment** &rarr; **Database**, click **Connect** &rarr; **Drivers** (Node.js) and copy the connection string:
+   ```
+   mongodb+srv://<username>:<password>@cluster0.mongodb.net/ayush_tech_blog?retryWrites=true&w=majority
+   ```
 
-2. **Create a MongoDB Database**:
-   - Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-   - Create a database user and whitelist IP `0.0.0.0/0` (allow access from anywhere).
-   - Copy your connection string (`mongodb+srv://...`).
+### 2. Cloudinary Setup (For Persistent Image Uploads)
+1. Sign up for a free account at [Cloudinary](https://cloudinary.com/).
+2. On your Cloudinary Dashboard, copy:
+   - **Cloud Name** (`CLOUDINARY_CLOUD_NAME`)
+   - **API Key** (`CLOUDINARY_API_KEY`)
+   - **API Secret** (`CLOUDINARY_API_SECRET`)
 
-3. **Deploy on Render**:
-   - Go to [dashboard.render.com](https://dashboard.render.com) and click **New +** &rarr; **Web Service**.
-   - Connect your GitHub repository `ayusjha2005/personal_blog`.
-   - Set the following options:
-     - **Name**: `personal-blog`
-     - **Region**: Oregon or Singapore
-     - **Branch**: `main`
-     - **Runtime**: `Node`
-     - **Build Command**: `npm install`
-     - **Start Command**: `npm start`
-   - Add **Environment Variables**:
-     ```
-     NODE_ENV=production
-     PORT=10000
-     MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/ayush_tech_blog?retryWrites=true&w=majority
-     SESSION_SECRET=generate_a_random_32_character_string_here
-     ADMIN_USERNAME=ayush
-     ADMIN_EMAIL=reach2kr.ayush@gmail.com
-     ADMIN_PASSWORD=your_strong_admin_password
-     CONTACT_EMAIL=reach2kr.ayush@gmail.com
-     BASE_URL=https://personal-blog-86td.onrender.com
-     ```
-   - Click **Deploy Web Service**.
+### 3. Deploy to Vercel (Web Dashboard)
+1. Push your repository to GitHub:
+   ```bash
+   git add .
+   git commit -m "chore: prepare for production vercel deployment"
+   git push origin main
+   ```
+2. Go to [vercel.com](https://vercel.com/) and click **Add New** &rarr; **Project**.
+3. Import your GitHub repository (`ayusjha2005/my_personal` or `ayusjha2005/personal_blog`).
+4. In **Project Settings** &rarr; **Environment Variables**, add the following:
 
-> [!NOTE]
-> **Ephemeral Storage on Render Free Tier**:
-> Render's free tier uses an ephemeral filesystem. If the container restarts or redeploys, locally uploaded images in `public/uploads` are reset. For long-term production image persistence, configure an external object store such as Cloudinary or AWS S3.
+| Key | Example Value | Description |
+|---|---|---|
+| `NODE_ENV` | `production` | Enables production mode, secure cookies, and optimizations |
+| `MONGODB_URI` | `mongodb+srv://<user>:<password>@cluster0...` | MongoDB Atlas connection string |
+| `SESSION_SECRET` | *(Random 32+ character string)* | Encrypts session cookies |
+| `ADMIN_USERNAME` | `ayush` | Initial admin username |
+| `ADMIN_EMAIL` | `reach2kr.ayush@gmail.com` | Initial admin email address |
+| `ADMIN_PASSWORD` | *(Your secure password)* | Initial admin password |
+| `CONTACT_EMAIL` | `reach2kr.ayush@gmail.com` | Receives contact submissions |
+| `CLOUDINARY_CLOUD_NAME` | `your_cloud_name` | Cloudinary storage identifier |
+| `CLOUDINARY_API_KEY` | `your_api_key` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | `your_api_secret` | Cloudinary API secret |
+
+5. Click **Deploy**. Vercel will build and deploy your application at `https://<your-project>.vercel.app`.
+
+### 4. Admin Account Initialization on Vercel
+After deployment, visit `https://<your-domain>/admin/setup` once. If no admin exists in your MongoDB Atlas database, it will automatically initialize the admin account with your configured `ADMIN_USERNAME`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD`. Then visit `/admin/login` to manage articles and projects.
 
 ---
 

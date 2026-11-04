@@ -13,22 +13,29 @@ router.get('/login', redirectIfAuthenticated, authController.getLogin);
 router.post('/login', authLimiter, authController.postLogin);
 router.get('/logout', authController.logout);
 
-// One-time setup: create admin user if none exists (uses server's own DB)
-router.get('/setup', async (req, res) => {
+// One-time setup: create admin user if none exists
+// Requires ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD environment variables
+// Protected by rate limiter to prevent brute-force abuse
+router.get('/setup', authLimiter, async (req, res) => {
   try {
     const count = await User.countDocuments({});
     if (count > 0) {
       return res.send(`
-        <p>Admin already exists. <a href="/admin/login">Go to login →</a></p>
+        <p>Admin already exists. <a href="/admin/login">Go to login &rarr;</a></p>
       `);
     }
-    const username = process.env.ADMIN_USERNAME || 'ayush';
-    const email = process.env.ADMIN_EMAIL || 'reach2kr.ayush@gmail.com';
-    const password = process.env.ADMIN_PASSWORD || 'admin123456';
+    const username = process.env.ADMIN_USERNAME;
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
+    if (!username || !email || !password) {
+      return res.status(400).send(
+        '<p>Error: ADMIN_USERNAME, ADMIN_EMAIL and ADMIN_PASSWORD must be configured in environment variables.</p>'
+      );
+    }
     const passwordHash = await User.hashPassword(password);
     await User.create({ username, email, passwordHash, role: 'admin' });
     res.send(`
-      <p>✅ Initial admin account initialized. <a href="/admin/login">Go to login →</a></p>
+      <p>&#x2705; Initial admin account initialized. <a href="/admin/login">Go to login &rarr;</a></p>
     `);
   } catch (err) {
     res.status(500).send('Setup failed: ' + err.message);

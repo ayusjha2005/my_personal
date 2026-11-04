@@ -19,8 +19,12 @@
   ],
   "author": "Ayush Jha",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.41.3",
     "compression": "^1.7.4",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
@@ -35,10 +39,14 @@
     "marked": "^15.0.7",
     "mongoose": "^8.9.5",
     "multer": "^1.4.5-lts.1",
+    "multer-storage-cloudinary": "^4.0.0",
     "sanitize-html": "^2.14.0",
     "slugify": "^1.6.6"
   },
   "devDependencies": {
     "mongodb-memory-server": "^10.1.4"
+  },
+  "overrides": {
+    "minimatch": "11.0.1"
   }
 }

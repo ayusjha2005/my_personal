@@ -3,6 +3,15 @@ const mongoose = require('mongoose');
 let mongodInstance = null;
 
 async function connectDB() {
+  // Reuse existing connection across serverless invocations
+  if (mongoose.connection && mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+  if (mongoose.connection && mongoose.connection.readyState === 2) {
+    await new Promise((resolve) => mongoose.connection.once('connected', resolve));
+    return mongoose.connection;
+  }
+
   const uri = process.env.MONGODB_URI;
 
   if (uri) {

@@ -16,13 +16,20 @@ async function startServer() {
     // 2. Ensure default admin and initial content exist
     const adminCount = await User.countDocuments({ role: 'admin' });
     if (adminCount === 0) {
-      console.log('No admin user found. Creating initial admin account...');
-      const username = process.env.ADMIN_USERNAME || 'ayush';
-      const email = process.env.ADMIN_EMAIL || 'reach2kr.ayush@gmail.com';
-      const password = process.env.ADMIN_PASSWORD || 'admin123456';
+    console.log('No admin user found. Creating initial admin account...');
+    const username = process.env.ADMIN_USERNAME;
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
+    if (!username || !email || !password) {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('ADMIN_USERNAME, ADMIN_EMAIL and ADMIN_PASSWORD must be set in production env vars.');
+      }
+      console.warn('[DEV ONLY] Admin env vars not set — skipping auto-create. Use /admin/setup to initialize.');
+    } else {
       const passwordHash = await User.hashPassword(password);
       await User.create({ username, email, passwordHash, role: 'admin' });
-      console.log(`Created admin: ${username} (${email}) with password: [REDACTED]`);
+      console.log(`Created admin: ${username} (${email})`);
+    }
     }
 
     const blogCount = await Blog.countDocuments({});

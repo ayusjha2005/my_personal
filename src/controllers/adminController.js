@@ -6,6 +6,38 @@ const Comment = require('../models/Comment');
 const Setting = require('../models/Setting');
 const User = require('../models/User');
 const { formatDate } = require('../utils/helpers');
+const upload = require('../middleware/upload');
+
+/**
+ * Returns the public URL of an uploaded file.
+ * Cloudinary: req.file.path  (full HTTPS URL)
+ * Local disk:  /uploads/<filename>
+ */
+function fileUrl(file) {
+  if (!file) return null;
+  // Cloudinary storage sets file.path to the secure URL
+  if (file.path && file.path.startsWith('http')) return file.path;
+  return `/uploads/${file.filename}`;
+}
+
+/**
+ * Deletes a Cloudinary asset by its URL (best-effort, non-fatal).
+ * Does nothing if the URL is not a Cloudinary URL.
+ */
+async function deleteCloudinaryAsset(url) {
+  if (!url || !url.includes('cloudinary.com')) return;
+  try {
+    const cloudinary = upload._cloudinary;
+    if (!cloudinary) return;
+    // Extract public_id from URL: everything between /upload/ and the extension
+    const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[a-z]+)?$/i);
+    if (match && match[1]) {
+      await cloudinary.uploader.destroy(match[1]);
+    }
+  } catch (err) {
+    console.warn('[Cloudinary] Could not delete asset:', url, err.message);
+  }
+}
 
 /**
  * Admin Dashboard Overview
@@ -131,7 +163,7 @@ exports.postNewBlog = async (req, res, next) => {
       seoDescription,
     } = req.body;
 
-    const coverImage = req.file ? `/uploads/${req.file.filename}` : '';
+    const coverImage = fileUrl(req.file) || '';
 
     const tagsArray = tags
       ? tags.split(',').map((t) => t.trim()).filter(Boolean)
@@ -221,7 +253,9 @@ exports.putEditBlog = async (req, res, next) => {
     blog.seoDescription = seoDescription ? seoDescription.trim() : excerpt.trim();
 
     if (req.file) {
-      blog.coverImage = `/uploads/${req.file.filename}`;
+      // Delete the old image from Cloudinary when it is replaced
+      await deleteCloudinaryAsset(blog.coverImage);
+      blog.coverImage = fileUrl(req.file);
     }
 
     if (blog.status === 'published' && !blog.publishedAt) {
@@ -289,7 +323,7 @@ exports.getNewProject = (req, res) => {
 exports.postNewProject = async (req, res, next) => {
   try {
     const { title, slug, description, technologies, githubUrl, liveUrl, featured, order } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : '';
+    const image = fileUrl(req.file) || '';
     const techArray = technologies
       ? technologies.split(',').map((t) => t.trim()).filter(Boolean)
       : [];
@@ -361,7 +395,9 @@ exports.putEditProject = async (req, res, next) => {
     project.order = parseInt(order) || 0;
 
     if (req.file) {
-      project.image = `/uploads/${req.file.filename}`;
+      // Delete the old image from Cloudinary when it is replaced
+      await deleteCloudinaryAsset(project.image);
+      project.image = fileUrl(req.file);
     }
 
     await project.save();
