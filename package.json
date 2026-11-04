@@ -7,6 +7,7 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "test": "node scripts/verifyAll.js",
+    "test:assets": "node scripts/testAssets.js",
     "test:upload": "node scripts/testUploads.js",
     "seed": "node scripts/seedDatabase.js",
     "init-admin": "node scripts/initAdmin.js"

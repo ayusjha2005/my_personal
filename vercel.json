@@ -1,38 +1,33 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "src/views/**",
-          "public/**"
-        ]
-      }
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "{src/views/**,public/**}"
     }
-  ],
-  "routes": [
+  },
+  "headers": [
     {
-      "src": "/(css|js|uploads)/(.*)",
-      "dest": "/public/$1/$2",
-      "headers": {
-        "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800"
-      }
+      "source": "/(css|js)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
     },
     {
-      "src": "/(icon\\.svg|manifest\\.json|sw\\.js|favicon\\.ico)",
-      "dest": "/public/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800"
-      }
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.js"
+      "source": "/(icon\\.svg|manifest\\.json|sw\\.js)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.js"
+    }
+  ]
 }

@@ -37,12 +37,18 @@ function createApp() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser(process.env.SESSION_SECRET || 'ayush-tech-blog-secret-key-2026'));
 
-  // Static assets
+  // Static assets — check both relative to __dirname and process.cwd()
   const publicDir = path.join(__dirname, '../public');
+  const rootPublicDir = path.join(process.cwd(), 'public');
   app.use(express.static(publicDir, { maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0 }));
+  if (rootPublicDir !== publicDir) {
+    app.use(express.static(rootPublicDir, { maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0 }));
+  }
 
-  // View engine setup
-  app.set('views', path.join(__dirname, 'views'));
+  // View engine setup — support views relative to __dirname and project root
+  const viewsDir = path.join(__dirname, 'views');
+  const rootViewsDir = path.join(process.cwd(), 'src/views');
+  app.set('views', viewsDir === rootViewsDir ? viewsDir : [viewsDir, rootViewsDir]);
   app.set('view engine', 'ejs');
 
   // Session configuration
