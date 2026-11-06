@@ -104,7 +104,7 @@
   .ticker { overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 0 -24px 34px; white-space: nowrap; color: var(--muted); font-family: var(--mono); font-size: 12px; }
   .tk { display: inline-flex; animation: tick 28s linear infinite; }
   .tk span { padding-right: 24px; }
-  .tk span::after { content: "✶"; margin-left: 24px; color: var(--red); }
+  .tk span::after { content: "âœ¶"; margin-left: 24px; color: var(--red); }
   @keyframes tick { to { transform: translateX(-50%); } }
 
   /* toolbar */
@@ -379,7 +379,7 @@
   .brand { transition: color .3s; }
   .hero .cta .btn:nth-child(2) { position: relative; }
   .counter { font-family: var(--mono); color: var(--fg); }
-  .sparkle-btn::before { content: "✦"; color: var(--red); margin-right: 4px; }
+  .sparkle-btn::before { content: "âœ¦"; color: var(--red); margin-right: 4px; }
 
   /* ---------- socials (about + footer) ---------- */
   .socials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 40px; }
@@ -1116,7 +1116,7 @@
 .skill-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--fg); transition: border-color .25s, transform .25s var(--spring); }
 .skill-pill:hover { border-color: var(--red); transform: translateY(-2px); }
 .skill-pill.exploring { border-style: dashed; border-color: var(--dim); color: var(--muted); }
-.skill-pill.exploring::after { content: ' · learning'; font-size: 10px; opacity: .7; }
+.skill-pill.exploring::after { content: ' Â· learning'; font-size: 10px; opacity: .7; }
 
 .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 44px; font-family: var(--mono); font-size: 13px; }
 .page-btn { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg); text-decoration: none; transition: all .25s; }
@@ -2056,7 +2056,7 @@ main {
 /* Phones (360px - 480px) responsive polish */
 @media (max-width: 480px) {
   /* Consistent phone gutters: 18px */
-  main, .fwrap, .view {
+  main, .fwrap {
     padding-left: 18px !important;
     padding-right: 18px !important;
   }
@@ -2558,8 +2558,10 @@ article h2.revealed::after {
   box-shadow: 0 0 12px rgba(255, 77, 46, 0.85);
 }
 
+
+
 /* ==============================================================
-   ARTICLE PAGE: mobile overflow fix
+   ARTICLE PAGE: mobile overflow fix (merged)
    1fr grid tracks grow to their widest child (long code lines,
    tables, URLs), pushing article boxes off-screen. Use minmax(0,1fr)
    and allow every article box to shrink; wide content scrolls inside.
@@ -2583,11 +2585,74 @@ article h2.revealed::after {
   .terminal-article-content table { display: block; max-width: 100%; overflow-x: auto; }
   .terminal-article-content img,
   .article-wrap img { max-width: 100%; height: auto; }
-  .terminal-titlebar-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .terminal-titlebar-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1 1 auto; }
   .terminal-cmd-line { overflow: hidden; }
   .byline { min-width: 0; }
   .pn .btn { min-width: 0; overflow-wrap: anywhere; }
   .like-corner-card { padding: 20px 18px; gap: 14px; }
   .comment-form { padding: 16px; }
   .comment-form input, .comment-form textarea { max-width: 100%; box-sizing: border-box; }
+}
+
+/* ==========================================================================
+   MOBILE OVERFLOW FIX (390px) - 2026-11-06
+   ========================================================================== */
+
+/* Grid children: prevent blowing past viewport width */
+.article-wrap > article,
+.article-wrap > .toc {
+  min-width: 0;
+}
+
+/* Terminal panel: contain horizontal overflow */
+.terminal-article-panel {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.terminal-article-content {
+  overflow-x: hidden;
+}
+
+/* Pre/code inside terminal must scroll, not overflow the page */
+.terminal-article-content pre,
+.terminal-article-content .codeblock pre {
+  overflow-x: auto;
+  white-space: pre;
+  word-break: normal;
+}
+
+/* Breadcrumb: allow wrapping so the slug doesn't overflow */
+.crumb {
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+
+/* Terminal title-bar: truncate long slug */
+.terminal-titlebar-text {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  article > div[style*="border-radius"] {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .terminal-article-content {
+    padding: 16px 14px 24px;
+  }
+  .terminal-cmd-line {
+    padding: 12px 14px 10px;
+    font-size: 12px;
+  }
+  .crumb {
+    white-space: normal;
+  }
+  .like-corner-card {
+    max-width: 100%;
+  }
 }
