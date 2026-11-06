@@ -2,7 +2,9 @@
 (function () {
   const markDone = () => { window.__introDone = true; (window.__introWait || []).splice(0).forEach(f => { try { f(); } catch (e) {} }); };
   let seen = false; try { seen = sessionStorage.getItem('introSeen') === '1'; } catch (e) {}
-  if (seen || matchMedia('(prefers-reduced-motion: reduce)').matches) { markDone(); return; }
+  const isHome = location.pathname === '/';
+  if (seen || !isHome || matchMedia('(prefers-reduced-motion: reduce)').matches) { markDone(); return; }
+  try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
 
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const intro = document.createElement('div');
