@@ -18,6 +18,12 @@ const adminRoutes = require('./routes/adminRoutes');
 function createApp() {
   const app = express();
 
+  // TEMP DEBUG: stage markers to find where requests stall
+  app.use((req, res, next) => {
+    console.log(`[Stage] 1 entered ${req.method} ${req.path}`);
+    next();
+  });
+
   // Trust proxy for secure cookies on Render / reverse proxies
   app.set('trust proxy', 1);
 
@@ -98,10 +104,18 @@ function createApp() {
   }
 
   app.use(session(sessionConfig));
+  app.use((req, res, next) => {
+    console.log(`[Stage] 2 after session ${req.path}`);
+    next();
+  });
 
 
   // Global view variables & flash messages
   app.use(viewGlobals);
+  app.use((req, res, next) => {
+    console.log(`[Stage] 3 after viewGlobals ${req.path}`);
+    next();
+  });
 
   // Route Mounting
   app.use('/', indexRoutes);
