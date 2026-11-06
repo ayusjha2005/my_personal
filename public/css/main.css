@@ -2354,6 +2354,7 @@ body.nos-shaking {
   z-index: 10000;
   opacity: 1;
   transform: translateX(-110%);
+  overflow: hidden;
   background: linear-gradient(108deg,
     rgba(6, 3, 12, 0.98) 0%,
     rgba(26, 10, 34, 0.96) 38%,
@@ -2560,99 +2561,154 @@ article h2.revealed::after {
 
 
 
-/* ==============================================================
-   ARTICLE PAGE: mobile overflow fix (merged)
-   1fr grid tracks grow to their widest child (long code lines,
-   tables, URLs), pushing article boxes off-screen. Use minmax(0,1fr)
-   and allow every article box to shrink; wide content scrolls inside.
-   ============================================================== */
-@media (max-width: 900px) {
-  .article-wrap { grid-template-columns: minmax(0, 1fr); }
-  .article-wrap > article { min-width: 0; max-width: 100%; }
-}
-@media (max-width: 760px) {
-  .article-wrap > article,
-  .article-wrap > article > * { min-width: 0; max-width: 100%; box-sizing: border-box; }
-  .terminal-article-panel,
-  .like-corner-card,
-  .actions-row,
-  .comments-section,
-  .comment-item,
-  .comment-form { max-width: 100%; min-width: 0; }
-  .terminal-article-content { padding: 18px 16px 26px; font-size: 13px; overflow-wrap: anywhere; word-break: normal; }
-  .terminal-article-content pre,
-  .terminal-article-content .codeblock { max-width: 100%; overflow-x: auto; }
-  .terminal-article-content table { display: block; max-width: 100%; overflow-x: auto; }
-  .terminal-article-content img,
-  .article-wrap img { max-width: 100%; height: auto; }
-  .terminal-titlebar-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1 1 auto; }
-  .terminal-cmd-line { overflow: hidden; }
-  .byline { min-width: 0; }
-  .pn .btn { min-width: 0; overflow-wrap: anywhere; }
-  .like-corner-card { padding: 20px 18px; gap: 14px; }
-  .comment-form { padding: 16px; }
-  .comment-form input, .comment-form textarea { max-width: 100%; box-sizing: border-box; }
-}
-
 /* ==========================================================================
-   MOBILE OVERFLOW FIX (390px) - 2026-11-06
+   ARTICLE & PAGE MOBILE OVERFLOW FIX (360px - 480px)
    ========================================================================== */
 
-/* Grid children: prevent blowing past viewport width */
-.article-wrap > article,
-.article-wrap > .toc {
-  min-width: 0;
+/* 1. Article grid containment */
+@media (max-width: 900px) {
+  .article-wrap {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .article-wrap > .toc,
+  .toc {
+    display: none !important;
+  }
+  .article-wrap > article {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
 }
 
-/* Terminal panel: contain horizontal overflow */
-.terminal-article-panel {
-  max-width: 100%;
-  overflow-x: hidden;
-}
+/* 2. Mobile layout & overflow containment (<= 760px) */
+@media (max-width: 760px) {
+  .article-wrap > article,
+  .article-wrap > article > * {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 
-.terminal-article-content {
-  overflow-x: hidden;
-}
+  /* Breadcrumb & byline */
+  .crumb {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+  }
+  .byline {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
 
-/* Pre/code inside terminal must scroll, not overflow the page */
-.terminal-article-content pre,
-.terminal-article-content .codeblock pre {
-  overflow-x: auto;
-  white-space: pre;
-  word-break: normal;
-}
-
-/* Breadcrumb: allow wrapping so the slug doesn't overflow */
-.crumb {
-  overflow-wrap: break-word;
-  word-break: break-all;
-}
-
-/* Terminal title-bar: truncate long slug */
-.terminal-titlebar-text {
-  min-width: 0;
-  flex: 1 1 auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-@media (max-width: 480px) {
-  article > div[style*="border-radius"] {
+  /* Article Drift Header & Images */
+  .article-drift-header {
     max-width: 100%;
     overflow: hidden;
   }
-  .terminal-article-content {
-    padding: 16px 14px 24px;
+  .article-wrap img,
+  article img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Headings */
+  article h1 {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  /* Terminal Window */
+  .terminal-article-panel {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .terminal-titlebar {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .terminal-titlebar-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1 1 auto;
   }
   .terminal-cmd-line {
-    padding: 12px 14px 10px;
-    font-size: 12px;
+    max-width: 100%;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 0;
   }
-  .crumb {
-    white-space: normal;
+  .terminal-cmd-text {
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    min-width: 0;
   }
+
+  /* Terminal Article Body */
+  .terminal-article-content {
+    padding: 16px 14px 24px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+  .terminal-article-content pre,
+  .terminal-article-content .codeblock pre {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre;
+    word-break: normal;
+    -webkit-overflow-scrolling: touch;
+  }
+  .terminal-article-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Interactive Elements */
   .like-corner-card {
     max-width: 100%;
+    min-width: 0;
+    padding: 20px 18px;
+    gap: 14px;
+    box-sizing: border-box;
+  }
+  .actions-row {
+    max-width: 100%;
+    min-width: 0;
+  }
+  .comments-section,
+  .comment-item,
+  .comment-form {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .comment-form {
+    padding: 16px;
+  }
+  .comment-form input,
+  .comment-form textarea {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .pn .btn {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 }

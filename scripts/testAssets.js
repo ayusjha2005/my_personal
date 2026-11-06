@@ -98,7 +98,7 @@ async function runAssetTests() {
   for (const p of pages) {
     const res = await fetchUrl(p.url);
     assert(res.statusCode === 200, `${p.name} (${p.url}) returns HTTP 200`);
-    assert(res.body.includes('<link rel="stylesheet" href="/css/main.css">'), `${p.name} includes root-relative /css/main.css`);
+    assert(res.body.includes('<link rel="stylesheet" href="/css/main.css'), `${p.name} includes root-relative /css/main.css`);
     assert(res.body.includes('<script src="/js/scene.js"></script>'), `${p.name} includes /js/scene.js`);
     assert(res.body.includes('<script src="/js/buddy.js"></script>'), `${p.name} includes /js/buddy.js`);
     assert(res.body.includes('<script src="/js/app.js"></script>'), `${p.name} includes /js/app.js`);
