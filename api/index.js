@@ -33,9 +33,12 @@ module.exports = async (req, res) => {
   const t0 = Date.now();
   console.log(`[Serverless] --> ${req.method} ${req.url}`);
   try {
+    console.log('[Serverless] TEMP before getApp');
     const app = await getApp();
     console.log(`[Serverless] getApp() resolved in ${Date.now() - t0}ms`);
+    console.log('[Serverless] TEMP before app(req,res)');
     app(req, res);
+    console.log('[Serverless] TEMP after app(req,res)');
   } catch (err) {
     console.error('[Serverless] Startup error:', err.message, err.stack);
     res.status(500).json({ error: 'Internal Server Error' });
