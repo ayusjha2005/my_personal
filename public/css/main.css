@@ -2557,3 +2557,37 @@ article h2.revealed::after {
   background: linear-gradient(90deg, transparent, rgba(255, 77, 46, 0.3), rgba(255, 77, 46, 0.85), #ff3b3b);
   box-shadow: 0 0 12px rgba(255, 77, 46, 0.85);
 }
+
+/* ==============================================================
+   ARTICLE PAGE: mobile overflow fix
+   1fr grid tracks grow to their widest child (long code lines,
+   tables, URLs), pushing article boxes off-screen. Use minmax(0,1fr)
+   and allow every article box to shrink; wide content scrolls inside.
+   ============================================================== */
+@media (max-width: 900px) {
+  .article-wrap { grid-template-columns: minmax(0, 1fr); }
+  .article-wrap > article { min-width: 0; max-width: 100%; }
+}
+@media (max-width: 760px) {
+  .article-wrap > article,
+  .article-wrap > article > * { min-width: 0; max-width: 100%; box-sizing: border-box; }
+  .terminal-article-panel,
+  .like-corner-card,
+  .actions-row,
+  .comments-section,
+  .comment-item,
+  .comment-form { max-width: 100%; min-width: 0; }
+  .terminal-article-content { padding: 18px 16px 26px; font-size: 13px; overflow-wrap: anywhere; word-break: normal; }
+  .terminal-article-content pre,
+  .terminal-article-content .codeblock { max-width: 100%; overflow-x: auto; }
+  .terminal-article-content table { display: block; max-width: 100%; overflow-x: auto; }
+  .terminal-article-content img,
+  .article-wrap img { max-width: 100%; height: auto; }
+  .terminal-titlebar-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .terminal-cmd-line { overflow: hidden; }
+  .byline { min-width: 0; }
+  .pn .btn { min-width: 0; overflow-wrap: anywhere; }
+  .like-corner-card { padding: 20px 18px; gap: 14px; }
+  .comment-form { padding: 16px; }
+  .comment-form input, .comment-form textarea { max-width: 100%; box-sizing: border-box; }
+}
