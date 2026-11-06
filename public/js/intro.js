@@ -13,18 +13,7 @@
     <div class="in-top"></div><div class="in-bot"></div>
     <div class="in-label">ayush · tokyo drift · night run</div>
     <div class="in-body">
-      <div class="in-stage">
-        <div class="in-smoke s1"></div><div class="in-smoke s2"></div>
-        <svg class="in-car" viewBox="0 0 300 110" aria-hidden="true">
-          <polygon class="in-beam" points="196,58 296,30 296,88 196,68" fill="rgba(255,214,102,.28)"/>
-          <path d="M14 70 L38 56 L78 48 L104 24 L176 24 L202 46 L226 52 L236 68 L236 78 L14 78 Z" fill="#0b0b12" stroke="#ffd666" stroke-width="1.6"/>
-          <path d="M104 24 L176 24 L186 44 L94 44 Z" fill="#14142a" stroke="#ff4d2e" stroke-width="1"/>
-          <circle cx="66" cy="82" r="14" fill="#111" stroke="#ffd666" stroke-width="2"/>
-          <circle cx="182" cy="82" r="14" fill="#111" stroke="#ffd666" stroke-width="2"/>
-          <circle cx="232" cy="60" r="4.5" fill="#fff8dc"/>
-          <rect x="10" y="60" width="7" height="6" rx="2" fill="#ff3b3b"/>
-        </svg>
-      </div>
+      
       <div class="in-term"></div>
       <div class="in-bar"><i></i></div>
       <div class="in-name"></div>

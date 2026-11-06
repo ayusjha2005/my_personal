@@ -1032,7 +1032,7 @@
 
 
   /* ===================== OPENING SEQUENCE (plays once per visit) ===================== */
-  #intro { position: fixed; inset: 0; z-index: 300; background: var(--sky-gradient); overflow: hidden; }
+  #intro { position: fixed; inset: 0; z-index: 300; background: #05020a url(/img/tokyo-drift.svg) center / cover no-repeat; overflow: hidden; }
   #intro .in-top, #intro .in-bot { position: absolute; left: 0; right: 0; height: 50%; background: transparent; transition: transform 1s cubic-bezier(.7,0,.2,1); }
   #intro .in-top { top: 0; border-bottom: 1px solid rgba(255,77,46,.35); }
   #intro .in-bot { bottom: 0; border-top: 1px solid rgba(255,77,46,.35); }
