@@ -13,9 +13,17 @@
   intro.innerHTML = `
     <div class="in-glow"></div>
     <div class="in-top"></div><div class="in-bot"></div>
-    <div class="in-label">ayush · tokyo drift · night run</div>
+    <div class="in-label">ayush.os · v2.0</div>
     <div class="in-body">
-      
+      <svg class="in-robot" viewBox="0 0 100 100" aria-hidden="true">
+        <line x1="50" y1="20" x2="50" y2="8" stroke="#8b98aa" stroke-width="2.4" stroke-linecap="round"/>
+        <circle class="in-bulb" cx="50" cy="7" r="4" fill="#e5353b"/>
+        <rect x="22" y="20" width="56" height="48" rx="15" fill="#e8eef6" stroke="#6f7b8c" stroke-width="1"/>
+        <rect x="30" y="30" width="40" height="28" rx="9" fill="#0b1d33"/>
+        <rect class="in-eye" x="37" y="37" width="8" height="12" rx="3" fill="#7cf0ff"/>
+        <rect class="in-eye" x="55" y="37" width="8" height="12" rx="3" fill="#7cf0ff"/>
+        <rect x="42" y="55" width="16" height="3" rx="1.5" fill="#6f7b8c"/>
+      </svg>
       <div class="in-term"></div>
       <div class="in-bar"><i></i></div>
       <div class="in-name"></div>
@@ -27,11 +35,11 @@
 
   const term = intro.querySelector('.in-term');
   const lines = [
-    ['> starting engine', ''],
-    ['> tuning the drift', 'ok'],
-    ['> loading shuto expressway', 'ok'],
-    ['> night run, neon on', 'ok'],
-    ['> welcome to Ayush Jha\'s tech blog 🏁', ''],
+    ['> booting ayush.os', ''],
+    ['> connecting to mongodb', 'ok'],
+    ['> syncing technical articles', 'ok'],
+    ['> waking the robot helper', 'ok'],
+    ['> welcome back to Ayush Jha\'s tech blog 👋', ''],
   ];
   lines.forEach(([t, ok], i) => setTimeout(() => {
     const d = document.createElement('div');
