@@ -21,7 +21,12 @@ router.get('/', async (req, res, next) => {
       featuredBlogs,
       projects,
       formatDate,
+    }, (renderErr, html) => {
+      console.log(`[Route] GET / — render finished in ${Date.now() - t0}ms${renderErr ? ' with error: ' + renderErr.message : ''}`);
+      if (renderErr) return next(renderErr);
+      res.send(html);
     });
+    console.log('[Route] GET / — render called');
   } catch (err) {
     console.error(`[Route] GET / — error after ${Date.now() - t0}ms:`, err.message);
     next(err);
