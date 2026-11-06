@@ -11,17 +11,20 @@
   intro.innerHTML = `
     <div class="in-glow"></div>
     <div class="in-top"></div><div class="in-bot"></div>
-    <div class="in-label">ayush.os · v2.0</div>
+    <div class="in-label">ayush · tokyo drift · night run</div>
     <div class="in-body">
-      <svg class="in-robot" viewBox="0 0 100 100" aria-hidden="true">
-        <line x1="50" y1="20" x2="50" y2="8" stroke="#8b98aa" stroke-width="2.4" stroke-linecap="round"/>
-        <circle class="in-bulb" cx="50" cy="7" r="4" fill="#e5353b"/>
-        <rect x="22" y="20" width="56" height="48" rx="15" fill="#e8eef6" stroke="#6f7b8c" stroke-width="1"/>
-        <rect x="30" y="30" width="40" height="28" rx="9" fill="#0b1d33"/>
-        <rect class="in-eye" x="37" y="37" width="8" height="12" rx="3" fill="#7cf0ff"/>
-        <rect class="in-eye" x="55" y="37" width="8" height="12" rx="3" fill="#7cf0ff"/>
-        <rect x="42" y="55" width="16" height="3" rx="1.5" fill="#6f7b8c"/>
-      </svg>
+      <div class="in-stage">
+        <div class="in-smoke s1"></div><div class="in-smoke s2"></div>
+        <svg class="in-car" viewBox="0 0 300 110" aria-hidden="true">
+          <polygon class="in-beam" points="196,58 296,30 296,88 196,68" fill="rgba(255,214,102,.28)"/>
+          <path d="M14 70 L38 56 L78 48 L104 24 L176 24 L202 46 L226 52 L236 68 L236 78 L14 78 Z" fill="#0b0b12" stroke="#ffd666" stroke-width="1.6"/>
+          <path d="M104 24 L176 24 L186 44 L94 44 Z" fill="#14142a" stroke="#ff4d2e" stroke-width="1"/>
+          <circle cx="66" cy="82" r="14" fill="#111" stroke="#ffd666" stroke-width="2"/>
+          <circle cx="182" cy="82" r="14" fill="#111" stroke="#ffd666" stroke-width="2"/>
+          <circle cx="232" cy="60" r="4.5" fill="#fff8dc"/>
+          <rect x="10" y="60" width="7" height="6" rx="2" fill="#ff3b3b"/>
+        </svg>
+      </div>
       <div class="in-term"></div>
       <div class="in-bar"><i></i></div>
       <div class="in-name"></div>
@@ -33,11 +36,11 @@
 
   const term = intro.querySelector('.in-term');
   const lines = [
-    ['> booting ayush.os', ''],
-    ['> connecting to mongodb', 'ok'],
-    ['> syncing technical articles', 'ok'],
-    ['> waking the robot helper', 'ok'],
-    ['> welcome back to Ayush Jha\'s tech blog 👋', ''],
+    ['> starting engine', ''],
+    ['> tuning the drift', 'ok'],
+    ['> loading shuto expressway', 'ok'],
+    ['> night run, neon on', 'ok'],
+    ['> welcome to Ayush Jha\'s tech blog 🏁', ''],
   ];
   lines.forEach(([t, ok], i) => setTimeout(() => {
     const d = document.createElement('div');
