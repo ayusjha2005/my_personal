@@ -1336,207 +1336,229 @@ body.light .comment-form input, body.light .comment-form textarea {
 }
 
 /* ==============================================================
-   TERMINAL PAGE TRANSITION OVERLAY
+   AYUSH.OS UNIFIED PAGE TRANSITION (MATCHES BOOT INTRO)
    ============================================================== */
-#terminal-transition {
+#os-transition {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
   z-index: 999999;
-  pointer-events: auto;
-  overflow: hidden;
-  background: transparent;
-}
-
-/* 8 full-width black bands, each 12.6% tall */
-.term-transition-bands {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
+  overflow: hidden;
+  display: none;
 }
 
-.term-band {
+.trans-top, .trans-bot {
   position: absolute;
   left: 0;
-  width: 100%;
-  height: 12.6%;
-  background: #000000;
+  right: 0;
+  height: 50.5%;
+  background: #030305;
   will-change: transform;
-}
-
-/* Odd bands start at -100% X with red shadow on right edge */
-.term-band.odd {
-  transform: translateX(-100%);
-  box-shadow: 10px 0 20px -3px rgba(229, 53, 59, 0.85);
-  animation: bandSlideOdd 1.05s cubic-bezier(0.7, 0, 0.2, 1) forwards;
-}
-
-/* Even bands start at +100% X */
-.term-band.even {
-  transform: translateX(100%);
-  animation: bandSlideEven 1.05s cubic-bezier(0.7, 0, 0.2, 1) forwards;
-}
-
-@keyframes bandSlideOdd {
-  0% {
-    transform: translateX(-100%);
-  }
-  36.2% { /* 0.38s / 1.05s = ~36.2% */
-    transform: translateX(0%);
-  }
-  57.1% { /* 0.6s / 1.05s = ~57.1% */
-    transform: translateX(0%);
-  }
-  100% { /* 0.6s + 0.46s = 1.06s */
-    transform: translateX(-100%);
-  }
-}
-
-@keyframes bandSlideEven {
-  0% {
-    transform: translateX(100%);
-  }
-  36.2% {
-    transform: translateX(0%);
-  }
-  57.1% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-/* Scanline overlay: repeating 1px lines every 3px, 4.5% white, flickers with steps(2) for 0.95s */
-.term-transition-scanlines {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.045) 0px,
-    rgba(255, 255, 255, 0.045) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  animation: scanlineFlicker 0.95s steps(2) infinite;
   z-index: 2;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes scanlineFlicker {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.72;
-  }
+.trans-top {
+  top: 0;
+  border-bottom: 2px solid var(--red);
+  box-shadow: 0 4px 24px rgba(229, 53, 59, 0.7), 0 0 40px rgba(229, 53, 59, 0.3);
+  transform: translateY(-101%);
 }
 
-/* Red flash: mix-blend screen, 0 -> 20% -> 0 -> 12%, steps(3), starting at 0.3s */
-.term-transition-flash {
-  position: absolute;
-  inset: 0;
+.trans-bot {
+  bottom: 0;
+  border-top: 2px solid var(--red);
+  box-shadow: 0 -4px 24px rgba(229, 53, 59, 0.7), 0 0 40px rgba(229, 53, 59, 0.3);
+  transform: translateY(101%);
+}
+
+/* Closing phase (when leaving current page) */
+#os-transition.closing {
+  display: block;
+  pointer-events: auto;
+}
+#os-transition.closing .trans-top {
+  transform: translateY(0%);
+}
+#os-transition.closing .trans-bot {
+  transform: translateY(0%);
+}
+
+/* Closed state (initial state upon arriving at new page) */
+#os-transition.closed {
+  display: block;
+  pointer-events: auto;
+}
+#os-transition.closed .trans-top {
+  transform: translateY(0%);
+}
+#os-transition.closed .trans-bot {
+  transform: translateY(0%);
+}
+
+/* Opening phase (smooth parting of the doors upon arrival) */
+#os-transition.closed.opening {
   pointer-events: none;
-  background: #e5353b;
-  mix-blend-mode: screen;
-  opacity: 0;
-  animation: redFlashAnim 0.75s steps(3) 0.3s forwards;
+}
+#os-transition.closed.opening .trans-top {
+  transform: translateY(-101%);
+  transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#os-transition.closed.opening .trans-bot {
+  transform: translateY(101%);
+  transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Laser sweep line at center seam */
+.trans-laser {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00e5ff 25%, #fff 50%, #e5353b 75%, transparent);
+  box-shadow: 0 0 16px rgba(229, 53, 59, 0.9), 0 0 24px #00e5ff;
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
   z-index: 3;
+  pointer-events: none;
+}
+#os-transition.closing .trans-laser {
+  transform: translateY(-50%) scaleX(1);
+  transition-delay: 0.08s;
+}
+#os-transition.closed.opening .trans-laser {
+  opacity: 0;
+  transform: translateY(-50%) scaleX(1.1);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-@keyframes redFlashAnim {
-  0% {
-    opacity: 0;
-  }
-  33% {
-    opacity: 0.20;
-  }
-  66% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0.12;
-  }
+/* Ambient glow in center (matches in-glow) */
+.trans-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 600px;
+  height: 600px;
+  margin: -300px 0 0 -300px;
+  background: radial-gradient(circle, rgba(229, 53, 59, 0.28) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+#os-transition.closing .trans-glow,
+#os-transition.closed .trans-glow {
+  opacity: 1;
+}
+#os-transition.closed.opening .trans-glow {
+  opacity: 0;
 }
 
-/* Centre command typing: $ open writing-corner ... at 26ms per char with blinking red block cursor */
-.term-transition-center {
+/* Center HUD Badge */
+.trans-hud {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.92);
   z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(8, 8, 12, 0.9);
+  border: 1px solid rgba(229, 53, 59, 0.45);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 24px rgba(229, 53, 59, 0.3);
+  backdrop-filter: blur(10px);
+  opacity: 0;
   pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.25s var(--spring);
+}
+#os-transition.closing .trans-hud,
+#os-transition.closed .trans-hud {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+#os-transition.closed.opening .trans-hud {
+  opacity: 0;
+  transform: translate(-50%, -60%) scale(0.95);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.trans-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 7px;
+}
+.trans-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red);
+  animation: statusPulse 1s infinite alternate;
+}
+
+.trans-cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--mono);
-  font-size: clamp(15px, 2.5vw, 22px);
-  color: #f0f0f0;
-  letter-spacing: -0.01em;
-  opacity: 0;
-  animation: centerFadeIn 1s ease 0.3s forwards;
-  text-shadow: 0 0 12px rgba(229, 53, 59, 0.7);
+  font-size: clamp(13px, 3.2vw, 15px);
+  color: var(--fg);
   white-space: nowrap;
 }
-
-@keyframes centerFadeIn {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -46%) scale(0.98);
-  }
-  20%, 80% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -54%) scale(1.02);
-  }
+.trans-prompt {
+  color: #27c93f;
+  font-weight: 600;
 }
-
-.term-cursor {
+.trans-text {
+  color: #fff;
+  font-weight: 500;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+.trans-cursor {
   display: inline-block;
-  width: 9px;
-  height: 1.25em;
+  width: 8px;
+  height: 14px;
   background: var(--red);
-  margin-left: 5px;
-  vertical-align: -0.22em;
-  box-shadow: 0 0 10px var(--red);
-  animation: termCursorBlink 0.6s steps(2) infinite;
+  box-shadow: 0 0 8px var(--red);
+  animation: blink 0.8s steps(2) infinite;
 }
 
-@keyframes termCursorBlink {
-  50% {
-    opacity: 0;
+/* Light mode adjustments */
+body.light .trans-top,
+body.light .trans-bot {
+  background: #fbfbfd;
+  border-color: var(--red);
+}
+body.light .trans-hud {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(217, 58, 64, 0.4);
+}
+body.light .trans-text {
+  color: #111;
+  text-shadow: none;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  #os-transition, .trans-top, .trans-bot, .trans-laser, .trans-glow, .trans-hud {
+    display: none !important;
+    animation: none !important;
+    transition: none !important;
   }
 }
-
-/* Sweep 2px red progress line with a glow across the bottom (0.85s) */
-.term-transition-progress {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 0%;
-  background: var(--red);
-  box-shadow: 0 0 14px 2px var(--red), 0 0 4px #ffffff;
-  z-index: 5;
-  animation: sweepProgress 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes sweepProgress {
-  0% {
-    width: 0%;
-  }
-  100% {
-    width: 100%;
-  }
-}
-
 /* ==============================================================
    TERMINAL ARTICLE WINDOW
    ============================================================== */
@@ -2344,41 +2366,6 @@ body.nos-shaking {
   40% { transform: translate(2px, -2px); }
   60% { transform: translate(-1px, 2px); }
   80% { transform: translate(2px, -1px); }
-}
-
-/* Route Change Wipe Overlay */
-#routeWipe {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10000;
-  opacity: 1;
-  transform: translateX(-110%);
-  overflow: hidden;
-  background: linear-gradient(108deg,
-    rgba(6, 3, 12, 0.98) 0%,
-    rgba(26, 10, 34, 0.96) 38%,
-    rgba(0, 229, 255, 0.45) 47%,
-    rgba(255, 248, 220, 0.95) 50%,
-    rgba(255, 77, 46, 0.5) 53%,
-    rgba(26, 10, 34, 0.96) 62%,
-    rgba(6, 3, 12, 0.98) 100%
-  );
-  box-shadow: 0 0 100px rgba(0, 229, 255, 0.6);
-}
-#routeWipe.wiping {
-  animation: routeWipeSlide 2.0s cubic-bezier(.4, 0, .2, 1) forwards;
-}
-#routeWipe.wipe-exit {
-  animation: routeWipeExit 1.0s cubic-bezier(0, .5, .25, 1) forwards;
-}
-@keyframes routeWipeSlide {
-  0% { transform: translateX(-110%); }
-  100% { transform: translateX(110%); }
-}
-@keyframes routeWipeExit {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(110%); }
 }
 
 /* ==========================================================================

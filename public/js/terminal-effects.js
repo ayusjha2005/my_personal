@@ -9,125 +9,168 @@
   };
 
   /* -------------------------------------------------------------
-     1. TERMINAL PAGE TRANSITION
+     1. UNIFIED AYUSH.OS PAGE TRANSITION SYSTEM
      ------------------------------------------------------------- */
   function getTransitionCommand(path) {
-    if (!path || path === '/' || path === '') return '$ open home ...';
+    if (!path || path === '/' || path === '') return '$ cd ~ (home)';
     if (path.includes('writing') || path.includes('blog')) {
       const parts = path.split('/').filter(Boolean);
       if (parts.length > 1) {
-        return `$ open writings/${parts[parts.length - 1]} ...`;
+        return '$ cat posts/' + parts[parts.length - 1] + '.md';
       }
-      return '$ open writings ...';
+      return '$ cd /writings';
     }
-    if (path.includes('project')) return '$ open projects ...';
-    if (path.includes('skill')) return '$ open skills ...';
-    if (path.includes('about')) return '$ open about ...';
-    if (path.includes('contact')) return '$ open contact ...';
-    if (path.includes('corner')) return '$ open writing-corner ...';
-    if (path.includes('admin')) return '$ open admin-portal ...';
+    if (path.includes('project')) return '$ cd /projects';
+    if (path.includes('skill')) return '$ cd /skills';
+    if (path.includes('about')) return '$ cat /about.txt';
+    if (path.includes('contact')) return '$ connect /contact';
+    if (path.includes('corner')) return '$ cd /writing-corner';
+    if (path.includes('admin')) return '$ sudo admin-console';
 
     const clean = path.replace(/^\/+|\/+$/g, '').replace(/[^a-zA-Z0-9_-]/g, '-');
-    return `$ open ${clean || 'workspace'} ...`;
+    return '$ open /' + (clean || 'system');
   }
+
+  let isTransitioning = false;
 
   function triggerPageTransition(targetUrl, targetPath) {
     if (prefersReducedMotion()) {
       window.location.href = targetUrl;
       return;
     }
+    if (isTransitioning) return;
+    isTransitioning = true;
 
-    // Prevent duplicate overlays
-    if (document.getElementById('terminal-transition')) return;
-
-    const overlay = document.createElement('div');
-    overlay.id = 'terminal-transition';
-
-    // 8 full-width bands (each 12.6% tall)
-    const bandsContainer = document.createElement('div');
-    bandsContainer.className = 'term-transition-bands';
-
-    for (let i = 0; i < 8; i++) {
-      const band = document.createElement('div');
-      const isOdd = i % 2 === 0; // 0, 2, 4, 6 (1st, 3rd, 5th, 7th in 1-based index)
-      band.className = `term-band ${isOdd ? 'odd' : 'even'}`;
-      band.style.top = `${i * 12.5}%`;
-      bandsContainer.appendChild(band);
+    let overlay = document.getElementById('os-transition');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'os-transition';
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.innerHTML =
+        '<div class="trans-top"></div>' +
+        '<div class="trans-bot"></div>' +
+        '<div class="trans-laser"></div>' +
+        '<div class="trans-glow"></div>' +
+        '<div class="trans-hud">' +
+          '<div class="trans-tag"><span class="trans-dot"></span> ayush.os · routing</div>' +
+          '<div class="trans-cmd">' +
+            '<span class="trans-prompt">ayush@system:~$</span>' +
+            '<span class="trans-text"></span>' +
+            '<span class="trans-cursor"></span>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(overlay);
     }
-    overlay.appendChild(bandsContainer);
 
-    // Scanline overlay
-    const scanlines = document.createElement('div');
-    scanlines.className = 'term-transition-scanlines';
-    overlay.appendChild(scanlines);
-
-    // Red flash
-    const flash = document.createElement('div');
-    flash.className = 'term-transition-flash';
-    overlay.appendChild(flash);
-
-    // Bottom progress line
-    const progress = document.createElement('div');
-    progress.className = 'term-transition-progress';
-    overlay.appendChild(progress);
-
-    // Center terminal command typing container
-    const center = document.createElement('div');
-    center.className = 'term-transition-center';
-
-    const textSpan = document.createElement('span');
-    const cursorSpan = document.createElement('span');
-    cursorSpan.className = 'term-cursor';
-
-    center.appendChild(textSpan);
-    center.appendChild(cursorSpan);
-    overlay.appendChild(center);
-
-    document.body.appendChild(overlay);
-
-    // Type the command at 26ms per character, starting around 0.3s
+    const textEl = overlay.querySelector('.trans-text');
     const cmd = getTransitionCommand(targetPath);
-    let charIndex = 0;
+    if (textEl) textEl.textContent = '';
 
-    setTimeout(() => {
-      const typeInterval = setInterval(() => {
-        if (charIndex < cmd.length) {
-          textSpan.textContent += cmd[charIndex];
-          charIndex++;
+    overlay.style.display = 'block';
+    overlay.classList.remove('closed', 'opening');
+    void overlay.offsetWidth;
+    overlay.classList.add('closing');
+
+    if (textEl) {
+      let ci = 0;
+      const stepTime = Math.max(12, Math.floor(180 / cmd.length));
+      const timer = setInterval(() => {
+        if (ci < cmd.length) {
+          textEl.textContent += cmd[ci++];
         } else {
-          clearInterval(typeInterval);
+          clearInterval(timer);
         }
-      }, 26);
-    }, 300);
+      }, stepTime);
+    }
 
-    // Navigate to target route right as the bands fully cover the screen (at ~0.48s - 0.55s)
+    try {
+      sessionStorage.setItem('osPageTransition', '1');
+      sessionStorage.setItem('osPageTransitionCmd', cmd);
+    } catch (_) {}
+
     setTimeout(() => {
       window.location.href = targetUrl;
-    }, 520);
+    }, 320);
 
-    // Safety cleanup after 1.05s
     setTimeout(() => {
-      if (overlay.parentNode) {
-        overlay.parentNode.removeChild(overlay);
+      if (overlay) {
+        overlay.classList.remove('closing');
+        isTransitioning = false;
       }
-    }, 1050);
+    }, 2000);
   }
 
-  // Intercept internal navigation clicks
+  function initPageEntrance() {
+    let hadTransition = false;
+    let cmd = '';
+    try {
+      hadTransition = sessionStorage.getItem('osPageTransition') === '1';
+      cmd = sessionStorage.getItem('osPageTransitionCmd') || 'ready ✓';
+    } catch (_) {}
+
+    if (!hadTransition || prefersReducedMotion()) {
+      const existing = document.getElementById('os-transition');
+      if (existing) existing.style.display = 'none';
+      return;
+    }
+
+    try {
+      sessionStorage.removeItem('osPageTransition');
+      sessionStorage.removeItem('osPageTransitionCmd');
+    } catch (_) {}
+
+    // If initial intro boot animation is active on home page, do not fight it
+    if (document.getElementById('intro')) {
+      const existing = document.getElementById('os-transition');
+      if (existing) existing.style.display = 'none';
+      return;
+    }
+
+    let overlay = document.getElementById('os-transition');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'os-transition';
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.innerHTML =
+        '<div class="trans-top"></div>' +
+        '<div class="trans-bot"></div>' +
+        '<div class="trans-laser"></div>' +
+        '<div class="trans-glow"></div>' +
+        '<div class="trans-hud">' +
+          '<div class="trans-tag"><span class="trans-dot"></span> ayush.os · ready</div>' +
+          '<div class="trans-cmd">' +
+            '<span class="trans-prompt">ayush@system:~$</span>' +
+            '<span class="trans-text">' + cmd + '</span>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+    }
+
+    overlay.style.display = 'block';
+    overlay.classList.add('closed');
+    void overlay.offsetWidth;
+
+    setTimeout(() => {
+      overlay.classList.add('opening');
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        overlay.classList.remove('closed', 'opening');
+      }, 380);
+    }, 40);
+  }
+
   function initNavigationInterceptor() {
     document.addEventListener('click', function (e) {
-      // Don't intercept if modifier keys are pressed or non-left clicks
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
         return;
       }
 
-      const link = e.target.closest('a');
+      const link = e.target.closest && e.target.closest('a[href]');
       if (!link) return;
 
       const href = link.getAttribute('href');
       if (!href) return;
 
-      // Ignore anchor links, hashes, mailto, tel, javascript, new tabs
       if (
         href.startsWith('#') ||
         href.startsWith('mailto:') ||
@@ -139,13 +182,17 @@
         return;
       }
 
-      // Check same origin
-      const targetUrl = new URL(href, window.location.href);
+      let targetUrl;
+      try {
+        targetUrl = new URL(href, window.location.href);
+      } catch (_) {
+        return;
+      }
+
       if (targetUrl.origin !== window.location.origin) {
         return;
       }
 
-      // If same page hash change
       if (targetUrl.pathname === window.location.pathname && targetUrl.search === window.location.search) {
         return;
       }
@@ -153,8 +200,9 @@
       e.preventDefault();
       triggerPageTransition(targetUrl.href, targetUrl.pathname);
     });
-  }
 
+    window.triggerPageTransition = triggerPageTransition;
+  }
   /* -------------------------------------------------------------
      2. ARTICLE WINDOW & SEQUENTIAL TEXT REVEAL
      ------------------------------------------------------------- */
@@ -784,11 +832,13 @@
   // Auto-init on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
+      initPageEntrance();
       initNavigationInterceptor();
       initArticleTerminalReveal();
       initTerminalCommandBar();
     });
   } else {
+    initPageEntrance();
     initNavigationInterceptor();
     initArticleTerminalReveal();
     initTerminalCommandBar();

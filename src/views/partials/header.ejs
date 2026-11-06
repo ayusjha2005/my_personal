@@ -1,3 +1,31 @@
+<div id="os-transition" class="closed" aria-hidden="true" style="display:none">
+  <div class="trans-top"></div>
+  <div class="trans-bot"></div>
+  <div class="trans-laser"></div>
+  <div class="trans-glow"></div>
+  <div class="trans-hud">
+    <div class="trans-tag"><span class="trans-dot"></span> ayush.os · ready</div>
+    <div class="trans-cmd">
+      <span class="trans-prompt">ayush@system:~$</span>
+      <span class="trans-text">ready ✓</span>
+    </div>
+  </div>
+</div>
+<script>
+  try {
+    if (sessionStorage.getItem('osPageTransition') === '1') {
+      var _ot = document.getElementById('os-transition');
+      if (_ot) {
+        _ot.style.display = 'block';
+        var _cmd = sessionStorage.getItem('osPageTransitionCmd');
+        if (_cmd) {
+          var _t = _ot.querySelector('.trans-text');
+          if (_t) _t.textContent = _cmd;
+        }
+      }
+    }
+  } catch(e){}
+</script>
 <header class="top">
   <div class="bar">
     <a class="brand" href="/">~/<span>ayush</span><span class="cursor"></span></a>

@@ -130,101 +130,13 @@
     setTimeout(() => document.body.classList.remove('nos-shaking'), 1200);
   }
 
-  // 7. Tokyo Drift: Page Transition Car Wipe (on link clicks and hashchange)
-  let routeWipe = document.getElementById('routeWipe');
-  if (!routeWipe) {
-    routeWipe = document.createElement('div');
-    routeWipe.id = 'routeWipe';
-    routeWipe.innerHTML = `
-      <div class="wipe-car-wrap">
-        <svg class="wipe-car-svg" viewBox="-2 -22 84 26">
-          <ellipse cx="40" cy="0" rx="38" ry="2.6" fill="rgba(0,229,255,0.4)"/>
-          <path d="M 0 -4 L 3 -10 L 16 -13 L 28 -18 L 44 -18 L 54 -12 L 72 -10 L 80 -7 L 80 -3 Z" fill="#c81d1d" stroke="rgba(0,229,255,0.7)" stroke-width="0.8"/>
-          <polygon points="28,-18 44,-18 50,-12 24,-12" fill="rgba(0,229,255,0.35)"/>
-          <line x1="6" y1="-7" x2="76" y2="-7" stroke="rgba(255,77,46,0.9)" stroke-width="1.1"/>
-          <rect x="2" y="-16" width="9" height="2" fill="#0a0c14"/>
-          <circle cx="16" cy="-3" r="4.5" fill="#000000" stroke="#00e5ff" stroke-width="0.6"/>
-          <circle cx="64" cy="-3" r="4.5" fill="#000000" stroke="#00e5ff" stroke-width="0.6"/>
-          <circle cx="80" cy="-6" r="1.5" fill="#fff8dc"/>
-          <circle cx="0" cy="-8" r="1.2" fill="#ff3b3b"/>
-        </svg>
-        <div class="wipe-speedline"></div>
-        <div class="wipe-speedline wipe-speedline-top"></div>
-      </div>
-    `;
-    document.body.appendChild(routeWipe);
-  }
-
-  // Check for seamless car transition exit on page arrival
-  try {
-    if (sessionStorage.getItem('carRouteWiping') === '1') {
-      sessionStorage.removeItem('carRouteWiping');
-      if (!REDUCED && routeWipe) {
-        routeWipe.classList.remove('wiping');
-        routeWipe.classList.add('wipe-exit');
-        setTimeout(() => routeWipe.classList.remove('wipe-exit'), 1000);
-      }
+  // 7. Page Transition Bridge (delegates to unified terminal-effects system)
+  window.triggerCarTransition = function (cb) {
+    if (window.triggerPageTransition) {
+      window.triggerPageTransition(window.location.href, window.location.pathname);
     }
-  } catch (_) {}
-
-  let isWiping = false;
-
-  function navigateSmooth(href) {
-    // Simple hard navigation — the new page will play the wipe-exit on arrival
-    window.location.href = href;
-  }
-
-  function triggerRouteWipe(callback) {
-    if (REDUCED || !routeWipe) {
-      if (callback) callback();
-      return;
-    }
-    if (isWiping) return;
-    isWiping = true;
-
-    routeWipe.classList.remove('wiping', 'wipe-exit');
-    void routeWipe.offsetWidth;
-    routeWipe.classList.add('wiping');
-
-    if (callback) {
-      // Wait until the car has swept almost all the way across (1.8s into the 2.0s animation)
-      // so the user sees the full neon wipe before the new page content appears
-      setTimeout(() => {
-        try {
-          sessionStorage.setItem('carRouteWiping', '1');
-        } catch (_) {}
-        callback();
-      }, 1800);
-    }
-    setTimeout(() => {
-      routeWipe.classList.remove('wiping');
-      isWiping = false;
-    }, 2100);
-  }
-
-  window.addEventListener('hashchange', () => triggerRouteWipe());
-  window.triggerCarTransition = triggerRouteWipe;
-
-  window.addEventListener('popstate', () => {
-    navigateSmooth(window.location.href);
-  });
-
-  // Intercept internal page link clicks for Tokyo Drift car transition
-  document.addEventListener('click', (e) => {
-    const a = e.target.closest && e.target.closest('a[href]');
-    if (!a) return;
-    const href = a.getAttribute('href');
-    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || a.target === '_blank') return;
-    if (href.startsWith('/admin') || href.startsWith('/api') || href.startsWith('/auth')) return;
-
-    if (href.startsWith('/') && !e.metaKey && !e.ctrlKey && !e.shiftKey && !a.hasAttribute('download')) {
-      e.preventDefault();
-      triggerRouteWipe(() => {
-        navigateSmooth(href);
-      });
-    }
-  });
-
+    if (cb) cb();
+  };
   // 8. Global Keyboard handler for Scanlines & NOS
   addEventListener('keydown', (e) => {
     const isTyping = /INPUT|TEXTAREA|SELECT/i.test(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
