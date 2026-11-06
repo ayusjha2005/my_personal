@@ -1032,18 +1032,18 @@
 
 
   /* ===================== OPENING SEQUENCE (plays once per visit) ===================== */
-  #intro { position: fixed; inset: 0; z-index: 300; background: #000; overflow: hidden; }
-  #intro .in-top, #intro .in-bot { position: absolute; left: 0; right: 0; height: 50%; background: #000; transition: transform 1s cubic-bezier(.7,0,.2,1); }
-  #intro .in-top { top: 0; border-bottom: 1px solid rgba(229,53,59,.35); }
-  #intro .in-bot { bottom: 0; border-top: 1px solid rgba(229,53,59,.35); }
+  #intro { position: fixed; inset: 0; z-index: 300; background: var(--sky-gradient); overflow: hidden; }
+  #intro .in-top, #intro .in-bot { position: absolute; left: 0; right: 0; height: 50%; background: transparent; transition: transform 1s cubic-bezier(.7,0,.2,1); }
+  #intro .in-top { top: 0; border-bottom: 1px solid rgba(255,77,46,.35); }
+  #intro .in-bot { bottom: 0; border-top: 1px solid rgba(255,77,46,.35); }
   #intro.out .in-top { transform: translateY(-101%); }
   #intro.out .in-bot { transform: translateY(101%); }
-  #intro .in-glow { position: absolute; left: 50%; top: 42%; width: 620px; height: 620px; margin: -310px 0 0 -310px; background: radial-gradient(circle, rgba(229,53,59,.22), transparent 60%); animation: inGlow 3s ease-in-out infinite; }
+  #intro .in-glow { position: absolute; left: 50%; top: 42%; width: 620px; height: 620px; margin: -310px 0 0 -310px; background: radial-gradient(circle, rgba(255,214,102,.22), transparent 60%); animation: inGlow 3s ease-in-out infinite; }
   @keyframes inGlow { 50% { transform: scale(1.15); opacity: .7; } }
   #intro .in-body { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 20px; transition: opacity .5s, transform .7s var(--ease); }
   #intro.out .in-body { opacity: 0; transform: scale(1.05); }
   #intro .in-label { position: absolute; left: 22px; top: 18px; font-family: var(--mono); font-size: 11px; color: #6f6a5e; letter-spacing: .06em; }
-  #intro .in-robot { width: 118px; height: 118px; filter: drop-shadow(0 0 22px rgba(229,53,59,.45)); animation: inFloat 3.2s ease-in-out infinite; }
+  #intro .in-robot { width: 118px; height: 118px; filter: drop-shadow(0 0 22px rgba(255,214,102,.45)); animation: inFloat 3.2s ease-in-out infinite; }
   @keyframes inFloat { 50% { transform: translateY(-6px); } }
   #intro .in-eye { transform-box: fill-box; transform-origin: 50% 50%; transform: scaleY(.08); transition: transform .4s cubic-bezier(.34,1.56,.64,1); }
   #intro.awake .in-eye { transform: scaleY(1); }
@@ -1053,7 +1053,7 @@
   @keyframes inLine { to { opacity: 1; transform: none; } }
   #intro .in-term .ok { color: #7ee787; }
   #intro .in-bar { width: min(440px, 88vw); height: 2px; background: #1c1c1c; position: relative; overflow: hidden; border-radius: 2px; }
-  #intro .in-bar i { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, #e5353b, #fff); transform: translateX(-100%); animation: inBar 2.4s cubic-bezier(.5,0,.2,1) .2s forwards; }
+  #intro .in-bar i { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, var(--taillight), var(--headlight)); transform: translateX(-100%); animation: inBar 2.4s cubic-bezier(.5,0,.2,1) .2s forwards; }
   @keyframes inBar { to { transform: translateX(0); } }
   #intro .in-name { font-size: clamp(34px, 8vw, 84px); font-weight: 700; letter-spacing: -.03em; color: #fff; display: flex; flex-wrap: wrap; justify-content: center; }
   #intro .in-name span { display: inline-block; opacity: 0; transform: translateY(34px) skewY(8deg); filter: blur(8px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1), filter .7s; }
